@@ -22,7 +22,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "image":"..\/..\/..\/..\/Program Files (x86)\/Tiled\/examples\/tmw_desert_spacing.png",
+         "image":"..\/tiles\/tileset.png",
          "imageheight":199,
          "imagewidth":265,
          "margin":1,

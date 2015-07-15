@@ -3,7 +3,12 @@ var Level = function () {};
 module.exports = Level;
 
 Level.prototype = {
-	preload: function() {
-		console.log("here")
+	create: function() {
+		console.log("Level");
+
+		this.initializeMap();
+	},
+
+	initializeMap: function() {	
 	}
 };
