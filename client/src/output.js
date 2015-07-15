@@ -22,12 +22,17 @@ module.exports = Level;
 
 Level.prototype = {
 	create: function() {
-		console.log("Level");
 
 		this.initializeMap();
 	},
 
 	initializeMap: function() {	
+		this.map = game.add.tilemap("map");
+
+		this.map.addTilesetImage("Desert", "tiles", 32, 32);
+		this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Ground"), 1200, 1200);
+		game.world.addAt(this.groundLayer, 0);
+		this.groundLayer.resizeWorld();
 	}
 };
 },{}],3:[function(require,module,exports){
@@ -41,7 +46,7 @@ Preloader.prototype = {
 	preload: function() {
 		this.displayLoader();
 
-		this.load.tilemap("map", "assets/maps/map.json", null, Phaser.Tilemap.TILED_JSON);
+		this.load.tilemap("map", "assets/map/map.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/tileset.png");
 	},
 

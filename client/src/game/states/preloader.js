@@ -8,7 +8,7 @@ Preloader.prototype = {
 	preload: function() {
 		this.displayLoader();
 
-		this.load.tilemap("map", "assets/maps/map.json", null, Phaser.Tilemap.TILED_JSON);
+		this.load.tilemap("map", "assets/map/map.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/tileset.png");
 	},
 
