@@ -6,9 +6,14 @@ module.exports = Level;
 
 Level.prototype = {
 	create: function() {
-
 		this.initializeMap();
 		this.initializePlayer();	
+	},
+
+	update: function() {
+
+//		console.log(player)
+		this.player.update();
 	},
 
 	initializeMap: function() {	
@@ -21,6 +26,6 @@ Level.prototype = {
 	},
 
 	initializePlayer : function () {
-		player = new Player(100, 100);
+		this.player = new Player(100, 100);
 	}
 };

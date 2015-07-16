@@ -1,12 +1,42 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-
 var Player = function (x, y) {
 	console.log("creating a player " + x  + " " + y);
+	
+	player = game.add.sprite(100, 100, "dude");
+	game.physics.arcade.enable(player);
+	player.animations.add('left', [0, 1, 2, 3], 10, true);
+    player.animations.add('right', [5, 6, 7, 8], 10, true);
 }
 
 module.exports = Player;
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
+
+Player.prototype.update = function() {
+
+	player.body.velocity.x = 0;
+
+	if (cursors.left.isDown)
+    {
+        //  Move to the left
+        player.body.velocity.x = -150;
+
+        player.animations.play('left');
+    }
+    else if (cursors.right.isDown)
+    {
+        //  Move to the right
+        player.body.velocity.x = 150;
+
+        player.animations.play('right');
+    }
+    else
+    {
+        //  Stand still
+        player.animations.stop();
+        player.frame = 4;
+    }
+}
 },{}],2:[function(require,module,exports){
 var Boot = function() {};
 
@@ -33,9 +63,14 @@ module.exports = Level;
 
 Level.prototype = {
 	create: function() {
-
 		this.initializeMap();
 		this.initializePlayer();	
+	},
+
+	update: function() {
+
+//		console.log(player)
+		this.player.update();
 	},
 
 	initializeMap: function() {	
@@ -48,7 +83,7 @@ Level.prototype = {
 	},
 
 	initializePlayer : function () {
-		player = new Player(100, 100);
+		this.player = new Player(100, 100);
 	}
 };
 },{"../entities/player":1}],4:[function(require,module,exports){
@@ -64,6 +99,10 @@ Preloader.prototype = {
 
 		this.load.tilemap("map", "assets/map/map.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/tileset.png");
+		this.load.spritesheet("dude", "assets/textures/dude.png", 32, 48);
+
+
+		cursors = game.input.keyboard.createCursorKeys();
 	},
 
 	displayLoader: function() {
