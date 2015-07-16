@@ -1,3 +1,5 @@
+var Player = require("../entities/player")
+
 var Level = function () {};
 
 module.exports = Level;
@@ -6,6 +8,7 @@ Level.prototype = {
 	create: function() {
 
 		this.initializeMap();
+		this.initializePlayer();	
 	},
 
 	initializeMap: function() {	
@@ -14,6 +17,10 @@ Level.prototype = {
 		this.map.addTilesetImage("tmw_desert_spacing", "tiles", 32, 32);
 		this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Tile Layer 1"), 600, 600);
 		game.world.addAt(this.groundLayer, 0);
-		this.groundLayer.resizeWorld(); 
+		this.groundLayer.resizeWorld();		 
+	},
+
+	initializePlayer : function () {
+		player = new Player(100, 100);
 	}
 };

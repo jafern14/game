@@ -1,4 +1,13 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+
+var Player = function (x, y) {
+	console.log("creating a player " + x  + " " + y);
+}
+
+module.exports = Player;
+
+Player.prototype = Object.create(Phaser.Sprite.prototype);
+},{}],2:[function(require,module,exports){
 var Boot = function() {};
 
 module.exports = Boot;
@@ -15,7 +24,9 @@ Boot.prototype = {
 		game.state.start("Preloader");
 	}
 }
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
+var Player = require("../entities/player")
+
 var Level = function () {};
 
 module.exports = Level;
@@ -24,6 +35,7 @@ Level.prototype = {
 	create: function() {
 
 		this.initializeMap();
+		this.initializePlayer();	
 	},
 
 	initializeMap: function() {	
@@ -32,10 +44,14 @@ Level.prototype = {
 		this.map.addTilesetImage("tmw_desert_spacing", "tiles", 32, 32);
 		this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Tile Layer 1"), 600, 600);
 		game.world.addAt(this.groundLayer, 0);
-		this.groundLayer.resizeWorld(); 
+		this.groundLayer.resizeWorld();		 
+	},
+
+	initializePlayer : function () {
+		player = new Player(100, 100);
 	}
 };
-},{}],3:[function(require,module,exports){
+},{"../entities/player":1}],4:[function(require,module,exports){
 var TextConfigurer = require("../util/text_configurer")
 
 var Preloader = function() {};
@@ -64,13 +80,13 @@ Preloader.prototype = {
 	    });
 	}
 } 
-},{"../util/text_configurer":4}],4:[function(require,module,exports){
+},{"../util/text_configurer":5}],5:[function(require,module,exports){
 exports.configureText = function(text, color, size) {
 	text.font = "Carter One";
 	text.fill = color;
 	text.fontSize = size;
 }
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 window.game = new Phaser.Game(600, 600, Phaser.AUTO, '');
 
 startGame();
@@ -95,4 +111,4 @@ function startGame() {
 
 	game.state.start('Boot');*/
 };
-},{"./game/states/boot":1,"./game/states/level":2,"./game/states/preloader":3}]},{},[5]);
+},{"./game/states/boot":2,"./game/states/level":3,"./game/states/preloader":4}]},{},[6]);
