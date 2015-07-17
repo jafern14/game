@@ -26,6 +26,6 @@ Level.prototype = {
 	},
 
 	initializePlayer : function () {
-		this.player = new Player(100, 100);
+		this.player = new Player();
 	}
 };

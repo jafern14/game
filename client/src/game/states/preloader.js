@@ -10,7 +10,7 @@ Preloader.prototype = {
 
 		this.load.tilemap("map", "assets/map/map.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/tileset.png");
-		this.load.spritesheet("dude", "assets/textures/dude.png", 32, 48);
+		this.load.spritesheet("dude", "assets/textures/enemy.png");
 
 
 		cursors = game.input.keyboard.createCursorKeys();
