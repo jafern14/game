@@ -14,6 +14,7 @@ Preloader.prototype = {
 
 
 		cursors = game.input.keyboard.createCursorKeys();
+		mouse = game.input.mouse;
 	},
 
 	displayLoader: function() {
