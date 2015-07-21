@@ -11,8 +11,6 @@ Level.prototype = {
 	},
 
 	update: function() {
-
-//		console.log(player)
 		this.player.update();
 	},
 
@@ -23,18 +21,19 @@ Level.prototype = {
 		this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Ground"), 600, 600);
 		game.world.addAt(this.groundLayer, 0);
 
+		/*
 		this.blockLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Block"), 600, 600);
 	    game.world.addAt(this.blockLayer, 1);
 
 	    this.map.setCollision([1,2,3,9,10,11], true, "Block");
-
+		*/
 
 
 		this.groundLayer.resizeWorld();		
-		this.blockLayer.resizeWorld(); 
+		//this.blockLayer.resizeWorld(); 
 	},
 
 	initializePlayer : function () {
-		this.player = new Player(100, 100);
+		this.player = new Player();
 	}
 };
