@@ -12,7 +12,8 @@ var Player = function (x, y) {
     this.velocityX = 150;
     this.veloictyY = 150;
 
-    this.directionQueue = [];
+    this.targetX = SPAWN_POINT_X;
+    this.targetY = SPAWN_POINT_Y;
 
 
     game.input.onDown.add(this.direct, this);
@@ -23,30 +24,50 @@ module.exports = Player;
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 Player.prototype.update = function() {
-    this.move();
-}
 
-Player.prototype.move = function() {
-    if (this.directionQueue.length > 0) {
-        direction = this.directionQueue[0];        
+	player.body.velocity.x = 0;
+    player.body.velocity.y = 0;
+        
+	if (cursors.left.isDown)
+    {
+        //  Move to the left
+        player.body.velocity.x = -150;
 
-        //if Player is at point
-        if (player.position.x == direction.x && player.position.y == direction.y) {
-            // Remove from queue
-            this.directionQueue = this.directionQueue.slice(1, this.directionQueue.length - 1);
-        }
+        player.animations.play('left');
+    }
+    else if (cursors.right.isDown)
+    {
+        //  Move to the right
+        player.body.velocity.x = 150;
+
+        player.animations.play('right');
+    }
+    else if (cursors.down.isDown)
+    {
+        //  Move to the right
+        player.body.velocity.y = 150;
+
+        //player.animations.play('right');
+    }
+    else if (cursors.up.isDown)
+    {
+        //  Move to the right
+        player.body.velocity.y = -150;
+
+        //player.animations.play('right');
+    }
+    else
+    {
+        //  Stand still
+        player.animations.stop();
+        player.frame = 4;
     }
 }
 
 Player.prototype.direct = function(mouse) {
-    if (game.input.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
-        this.directionQueue.push(new Phaser.Point(mouse.clientX, mouse.clientY))
-    }
-    else {
-        this.directionQueue = [new Phaser.Point(mouse.clientX, mouse.clientY)]
-    }
-
-    console.log(this.directionQueue[0] + " " +  player.position);
+   
+    this.targetX = mouse.clientX;
+    this.targetY = mouse.clientY;
 }
 },{}],2:[function(require,module,exports){
 var Boot = function() {};
@@ -87,10 +108,19 @@ Level.prototype = {
 	initializeMap: function() {	
 		this.map = game.add.tilemap("map");
 
-		this.map.addTilesetImage("tmw_desert_spacing", "tiles", 32, 32);
-		this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Tile Layer 1"), 600, 600);
+		this.map.addTilesetImage("tileset", "tiles", 32, 32);
+		this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Ground"), 600, 600);
 		game.world.addAt(this.groundLayer, 0);
-		this.groundLayer.resizeWorld();		 
+
+		this.blockLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Block"), 600, 600);
+	    game.world.addAt(this.blockLayer, 1);
+
+	    this.map.setCollision([1,2,3,9,10,11], true, "Block");
+
+
+
+		this.groundLayer.resizeWorld();		
+		this.blockLayer.resizeWorld(); 
 	},
 
 	initializePlayer : function () {
@@ -108,7 +138,7 @@ Preloader.prototype = {
 	preload: function() {
 		this.displayLoader();
 
-		this.load.tilemap("map", "assets/map/map.json", null, Phaser.Tilemap.TILED_JSON);
+		this.load.tilemap("map", "assets/map/map2.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/tileset.png");
 		this.load.spritesheet("dude", "assets/textures/dude.png", 32, 48);
 
