@@ -1,23 +1,20 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var SPAWN_POINT_X = 100;
-var SPAWN_POINT_Y = 100;
+var SPAWN_POINT_X = 150;
+var SPAWN_POINT_Y = 175;
 
-var Player = function (x, y) {
-	player = game.add.sprite(SPAWN_POINT_X, SPAWN_POINT_Y, "dude");
-	game.physics.arcade.enable(player);
+var Player = function () {
+    this.player = game.add.sprite(SPAWN_POINT_X, SPAWN_POINT_Y, "dude");
+    this.player.scale.set(.4,.4);
 
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
+    this.player.anchor.x = .5;
+    this.player.anchor.y = .5;
+    this.player.rotation = 3 * Math.PI / 2;
+   
+    game.physics.arcade.enable(this.player);
 
-    this.velocityX = 150;
-    this.veloictyY = 150;
-
-    this.targetX = SPAWN_POINT_X;
-    this.targetY = SPAWN_POINT_Y;
-
+    game.physics.arcade.collide(this, level.blockLayer);
     game.input.onDown.add(this.direct, this);
 }
-
 module.exports = Player;
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -25,25 +22,23 @@ Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 var tween;  
 Player.prototype.move = function() {
+    if (this.player.position.x != this.direction.x && this.player.position.y != this.direction.y){
+        var pointer = this.direction;
 
-    var pointer = this.direction;
+        if (tween && tween.isRunning)
+        {
+            tween.stop();
+        }
 
-    if (tween && tween.isRunning)
-    {
-        tween.stop();
+        this.player.rotation = game.physics.arcade.angleToPointer(this.player) + Math.PI;
+
+        var duration = (game.physics.arcade.distanceToPointer(this.player) / 200) * 1000;
+        tween = game.add.tween(this.player).to({ x: pointer.x, y: pointer.y }, duration, Phaser.Easing.Linear.None, true);       
     }
-
-
-    this.player.rotation = game.physics.arcade.angleToPointer(this.player) + Math.PI;
-
-    var duration = (game.physics.arcade.distanceToPointer(this.player) / 150) * 1000;
-    tween = game.add.tween(this.player).to({ x: pointer.x, y: pointer.y }, duration, Phaser.Easing.Linear.None, true);
-
 }
 
 Player.prototype.direct = function(mouse) {
     this.direction = new Phaser.Point(mouse.clientX, mouse.clientY);
-
     this.move();
 }
 },{}],2:[function(require,module,exports){
@@ -53,6 +48,7 @@ module.exports = Boot;
 
 Boot.prototype = {
 	create: function() {
+		game.stage.disableVisibilityChange = true;
 		if (game.device.desktop) {
 			game.stage.scale.pageAlignHorizontally = true;
 		}
@@ -72,8 +68,9 @@ module.exports = Level;
 
 Level.prototype = {
 	create: function() {
+		level = this;
 		this.initializeMap();
-		this.initializePlayer();	
+		this.initializePlayer();
 	},
 
 	update: function() {
@@ -83,20 +80,21 @@ Level.prototype = {
 	initializeMap: function() {	
 		this.map = game.add.tilemap("map");
 
-		this.map.addTilesetImage("tileset", "tiles", 32, 32);
+		this.map.addTilesetImage("tiles", "tiles", 32, 32);
 		this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Ground"), 600, 600);
 		game.world.addAt(this.groundLayer, 0);
 
-		/*
+		this.groundLayer.resizeWorld();		
+		
+		
 		this.blockLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Block"), 600, 600);
 	    game.world.addAt(this.blockLayer, 1);
 
-	    this.map.setCollision([1,2,3,9,10,11], true, "Block");
-		*/
+	    this.map.setCollision([1,2,3,9,10,11,28], true, "Block");
+		
 
 
-		this.groundLayer.resizeWorld();		
-		//this.blockLayer.resizeWorld(); 
+		this.blockLayer.resizeWorld(); 
 	},
 
 	initializePlayer : function () {
@@ -114,10 +112,9 @@ Preloader.prototype = {
 	preload: function() {
 		this.displayLoader();
 
-		this.load.tilemap("map", "assets/map/map.json", null, Phaser.Tilemap.TILED_JSON);
+		this.load.tilemap("map", "assets/map/map2.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/tileset.png");
 		this.load.spritesheet("dude", "assets/textures/enemy.png");
-
 
 		cursors = game.input.keyboard.createCursorKeys();
 		mouse = game.input.mouse;

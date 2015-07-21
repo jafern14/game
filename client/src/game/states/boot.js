@@ -4,6 +4,7 @@ module.exports = Boot;
 
 Boot.prototype = {
 	create: function() {
+		game.stage.disableVisibilityChange = true;
 		if (game.device.desktop) {
 			game.stage.scale.pageAlignHorizontally = true;
 		}
