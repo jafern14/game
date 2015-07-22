@@ -3,84 +3,88 @@ var SPAWN_POINT_X = 30;
 var SPAWN_POINT_Y = 30;
 
 var Player = function () {
-    this.player = game.add.sprite(SPAWN_POINT_X, SPAWN_POINT_Y, "dude");
-    this.player.scale.set(.3,.3);
+    Phaser.Sprite.call(this, game, SPAWN_POINT_X, SPAWN_POINT_Y, "dude")
+    //this.player = game.add.sprite(SPAWN_POINT_X, SPAWN_POINT_Y, "dude");
+    this.scale.set(.3,.3);
 
-    this.player.anchor.x = .5;
-    this.player.anchor.y = .5;
-    this.player.rotation = 3 * Math.PI / 2;
+    this.anchor.x = .5;
+    this.anchor.y = .5;
+    this.rotation = 3 * Math.PI / 2;
    
 
-    game.physics.arcade.enable(this.player);
+
+    game.physics.enable(this, Phaser.Physics.ARCADE);
     game.input.onDown.add(this.direct, this);
 
-    this.player.body.collideWorldBounds = true;
+    game.add.existing(this);
 }
+
 module.exports = Player;
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 
 Player.prototype.update = function() {
-
-    
     game.physics.arcade.collide(this, level.blockLayer);
 
-    this.player.body.velocity.x = 0;
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
 
 
     if (cursors.left.isDown)
     {
         //  Move to the left
-        this.player.body.velocity.x = -150;
+        this.body.velocity.x = -150;
     }
     else if (cursors.right.isDown)
     {
         //  Move to the right
-        this.player.body.velocity.x = 150;
+        this.body.velocity.x = 150;
     }
     else if (cursors.down.isDown)
     {
         //  Move to the right
-        this.player.body.velocity.y = 150;
+        this.body.velocity.y = 150;
     }
     else if (cursors.up.isDown)
     {
         //  Move to the right
-        this.player.body.velocity.y = -150;
+        this.body.velocity.y = -150;
     }
     else {
-         this.player.body.velocity.y = 0;
-         this.player.body.velocity.x = 0;
+        this.body.velocity.y = 0;
+        this.body.velocity.x = 0;
     }
 
 }
 
 /*var tween;  
 Player.prototype.move = function() {
-    if (this.player.position.x != this.direction.x && this.player.position.y != this.direction.y) {
+    if (this.position.x != this.direction.x && this.position.y != this.direction.y) {
         var pointer = this.direction;
 
         if (tween && tween.isRunning) {
             tween.stop();
         }
 
-        this.player.rotation = game.physics.arcade.angleToPointer(this.player) + Math.PI;
-        var duration = (game.physics.arcade.distanceToPointer(this.player) / 200) * 1000;
-        tween = game.add.tween(this.player).to({ x: pointer.x, y: pointer.y }, duration, Phaser.Easing.Linear.None, true);       
+        this.rotation = game.physics.arcade.angleToPointer(this.player) + Math.PI;
+        var duration = (game.physics.arcade.distanceToPointer(this) / 200) * 1000;
+        tween = game.add.tween(this).to({ x: pointer.x, y: pointer.y }, duration, Phaser.Easing.Linear.None, true);       
    
-} }*/
-
-/*Player.prototype.move = function() {
-    if (this.player.position.x != this.direction.x && this.player.position.y != this.direction.y) {
-        this.player.rotation = game.physics.arcade.angleToPointer(this.player) + Math.PI;
-        game.physics.arcade.moveToXY(this.player, this.direction.x, this.direction.y, 200)
-    }
+    } 
 }*/
+
+Player.prototype.move = function() {
+    if (this.position.x != this.direction.x && this.position.y != this.direction.y) {
+        game.physics.arcade.collide(this, level.blockLayer);
+        this.rotation = game.physics.arcade.angleToPointer(this) + Math.PI;
+        //game.physics.arcade.moveToXY(this, this.direction.x, this.direction.y, 200)
+    }
+}
 
 Player.prototype.direct = function(mouse) {
     this.direction = new Phaser.Point(mouse.clientX, mouse.clientY);
-    //this.move();
+    this.move();
 }
 },{}],2:[function(require,module,exports){
 var Boot = function() {};
@@ -111,8 +115,8 @@ Level.prototype = {
 	create: function() {
 		level = this;
 		this.initializeMap();
-		this.initializePlayer();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
+		this.initializePlayer();
 	},
 
 	update: function() {
@@ -123,13 +127,14 @@ Level.prototype = {
 		this.map = game.add.tilemap("map");
 
 		this.map.addTilesetImage("tiles", "tiles", 32, 32);
-		this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Ground"), 600, 600);
+
+		this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Ground"), game.width, game.height);
 		game.world.addAt(this.groundLayer, 0);
 
 		this.groundLayer.resizeWorld();		
 		
 		
-		this.blockLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Block"), 600, 600);
+		this.blockLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Block"), game.width, game.height);
 	    game.world.addAt(this.blockLayer, 1);
 
 	    this.map.setCollision([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28], true, "Block");
