@@ -1,6 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var SPAWN_POINT_X = 30;
 var SPAWN_POINT_Y = 30;
+var MAX_VELOCITY = 150;
 
 var Player = function () {
     Phaser.Sprite.call(this, game, SPAWN_POINT_X, SPAWN_POINT_Y, "dude");
@@ -15,7 +16,8 @@ var Player = function () {
     this.anchor.y = .5;
     this.rotation = 3 * Math.PI / 2;
 
-    this.tween;
+    this.destination;
+
     game.add.existing(this);
 }
 
@@ -25,51 +27,38 @@ Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 Player.prototype.update = function() {
     game.debug.body(this, "rgba(0,255,0,1)", false);
-    //game.debug.body(level.blockLayer);
-    //game.physics.arcade.collide(this, level.blockLayer);
-    game.physics.arcade.overlap(this, level.blockLayer, this.die);
-    this.body.velocity.x = 0;
-    this.body.velocity.y = 0;
 
+    this.checkLocation();
 
-    if (cursors.left.isDown)
-    {
-        //  Move to the left
-        this.body.velocity.x = -150;
-    }
-    else if (cursors.right.isDown)
-    {
-        //  Move to the right
-        this.body.velocity.x = 150;
-    }
-    else if (cursors.down.isDown)
-    {
-        //  Move to the right
-        this.body.velocity.y = 150;
-    }
-    else if (cursors.up.isDown)
-    {
-        //  Move to the right
-        this.body.velocity.y = -150;
-    }
-    else {
-        this.body.velocity.y = 0;
-        this.body.velocity.x = 0;
-    }
+    
 }
 
 Player.prototype.move = function(pointer) {
+    this.destination = new Phaser.Point(pointer.x, pointer.y);
+    this.rotation = game.physics.arcade.angleToPointer(this.body, pointer) + Math.PI;
+    game.physics.arcade.moveToXY(this, pointer.x, pointer.y, MAX_VELOCITY);
+}
 
-    if (this.position.x != pointer.x && this.position.y != pointer.y) {
+Player.prototype.checkLocation = function() {
 
-        if (this.tween && this.tween.isRunning) {
-            this.tween.stop();
+    if (this.destination != null) {
+        if (Math.abs(this.position.x - this.destination.x) < MAX_VELOCITY/50) {
+            this.body.velocity.x = -(this.position.x - this.destination.x);
+            
+        }
+        if (Math.abs(this.position.y - this.destination.y) < MAX_VELOCITY/50) {
+            this.body.velocity.y = -(this.position.y - this.destination.y);
         }
 
-        this.rotation = game.physics.arcade.angleToPointer(this) + Math.PI;
-        var duration = (game.physics.arcade.distanceToPointer(this) / 200) * 1000;
-        tween = game.add.tween(this).to({ x: pointer.x, y: pointer.y }, duration, Phaser.Easing.Linear.None, true);
-    } 
+        if (this.position.x == this.destination.x && this.position.y == this.destination.y) {
+            this.destination == null;
+        }
+
+    }
+
+
+
+    game.physics.arcade.overlap(this, level.blockLayer, this.die);
 }
 
 
