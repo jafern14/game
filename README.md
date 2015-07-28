@@ -15,3 +15,5 @@ Using browserify/watchify:
 cd ~game/client
 watchify src/main.js -o src/output.js --verbose
 
+
+volcano-tileset.png from http://www.angelfire.com/ca2/EtrionEmpire/CharDesign/games/rm2k.html

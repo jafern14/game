@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="38" height="38" tilewidth="16" tileheight="16" nextobjectid="1">
+ <tileset firstgid="1" name="volcano-tileset" tilewidth="16" tileheight="16">
+  <image source="../../tiles/volcano-tileset.png" width="480" height="256"/>
+  <terraintypes>
+   <terrain name="Lava" tile="-1"/>
+  </terraintypes>
+  <tile id="399" terrain=",,,0"/>
+  <tile id="400" terrain=",,0,0"/>
+  <tile id="401" terrain=",,0,"/>
+  <tile id="429" terrain=",0,,0"/>
+  <tile id="430" terrain="0,0,0,0"/>
+  <tile id="431" terrain="0,,0,"/>
+  <tile id="459" terrain=",0,,"/>
+  <tile id="460" terrain="0,0,,"/>
+  <tile id="461" terrain="0,,,"/>
+ </tileset>
+ <layer name="Ground" width="38" height="38">
+  <data encoding="base64" compression="zlib">
+   eJzt1KERACAMBMFQQdJ/tfgMKoJ/hhPnV12uiCQSVQYGol+qltrj7uo+tQMXLlyeLtd/4Zrb1A5cuG56cM2MasNLLiKiUxtmt1p1
+  </data>
+ </layer>
+ <layer name="Lava" width="38" height="38">
+  <data encoding="base64" compression="zlib">
+   eJztl1EOgjAQRNtjk3gI9Mt4CPDTQ6g/RM8jDUzYbrZAS1tI7CQTYhR4zm6XolRRUVFR0T/orCdf9N40k269Wz34fiAuMB2N66EGJpObL1et7T6Ys2+PXDdwNdrO+6vsz8YnFVYLcIWcy7nmvBeXlFUMLtNnvuc++9+/Rrt40L8586JqCEMrsIZwhf4nqHYw0DzfmfPiTGb9xZiDW7mkNembTWwunlXIDFzi8r1mTVhiZ0W5fPLiOWH9xWIK4ZKYUjzvDRdqsXR9ae3FrB3nWjPvwURnZ8q90Zo6SrWL3ecSl2svgv0VZ8EzOhWTUde7UtM96V6Oz6ZUa0/Sh7DxWcRZcvBA3chWEaOue+77O4EN/UPzyv0OR7n4sRqPyC/neyYYJINZqnFqPprXWlO+VGyVsjPh98f3LsZUbD8qtOh9
+  </data>
+ </layer>
+ <layer name="Wall" width="38" height="38">
+  <data encoding="base64" compression="zlib">
+   eJzt2F0KgCAQBGDvfwq7SHaQ6iyxkCBiu/mzrg8zMG9WHya0FJxzAUWVejGtXV9TycVlz9Yewvqa5PeGCy644IKrL2eHi65Nvx33QBeF2zPLrOri3qV1vvbMOnDVZUWXd+ude85k5ZJMM11k2d5Kphmu6PljmemS5gYLl280abp6TFquXpOGi0ytZ4oaZ73RkebQ/Pmac2fJVvo3Muv5UtI53NqC2OQB02yPFw==
+  </data>
+ </layer>
+</map>
