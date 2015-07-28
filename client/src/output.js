@@ -41,6 +41,7 @@ Player.prototype.move = function(pointer) {
 
 Player.prototype.checkLocation = function() {
 
+    game.physics.arcade.overlap(this, level.blockLayer);
     if (this.destination != null) {
         if (Math.abs(this.position.x - this.destination.x) < MAX_VELOCITY/50) {
             this.body.velocity.x = -(this.position.x - this.destination.x);
@@ -53,17 +54,11 @@ Player.prototype.checkLocation = function() {
         if (this.position.x == this.destination.x && this.position.y == this.destination.y) {
             this.destination == null;
         }
-
     }
-
-
-
-    game.physics.arcade.overlap(this, level.blockLayer, this.die);
 }
 
 
 Player.prototype.die = function () {
-    console.log("overlap detected");
 }
 },{}],2:[function(require,module,exports){
 var Boot = function() {};
@@ -116,7 +111,7 @@ Level.prototype = {
 		this.blockLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Block"), game.width, game.height);
 	    game.world.addAt(this.blockLayer, 1);
 
-	    this.map.setCollision([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28], true, "Block");
+	    this.map.setCollision([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28], true, "Block");
 		this.blockLayer.resizeWorld(); 
 
 		game.physics.arcade.enable(this.blockLayer);

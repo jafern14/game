@@ -40,6 +40,7 @@ Player.prototype.move = function(pointer) {
 
 Player.prototype.checkLocation = function() {
 
+    game.physics.arcade.overlap(this, level.blockLayer);
     if (this.destination != null) {
         if (Math.abs(this.position.x - this.destination.x) < MAX_VELOCITY/50) {
             this.body.velocity.x = -(this.position.x - this.destination.x);
@@ -52,15 +53,9 @@ Player.prototype.checkLocation = function() {
         if (this.position.x == this.destination.x && this.position.y == this.destination.y) {
             this.destination == null;
         }
-
     }
-
-
-
-    game.physics.arcade.overlap(this, level.blockLayer, this.die);
 }
 
 
 Player.prototype.die = function () {
-    console.log("overlap detected");
 }
