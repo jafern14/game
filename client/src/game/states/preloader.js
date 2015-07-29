@@ -8,8 +8,8 @@ Preloader.prototype = {
 	preload: function() {
 		this.displayLoader();
 
-		this.load.tilemap("map", "assets/map/map2.json", null, Phaser.Tilemap.TILED_JSON);
-		this.load.image("tiles", "assets/tiles/tileset.png");
+		this.load.tilemap("map", "assets/map/Lava-1.json", null, Phaser.Tilemap.TILED_JSON);
+		this.load.image("tiles", "assets/tiles/volcano-tileset.png");
 		this.load.spritesheet("dude", "assets/textures/enemy.png");
 
 		cursors = game.input.keyboard.createCursorKeys();
