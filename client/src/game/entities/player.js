@@ -1,9 +1,7 @@
-var SPAWN_POINT_X = 30;
-var SPAWN_POINT_Y = 120;
 var MAX_VELOCITY = 150;
 
-var Player = function () {
-    Phaser.Sprite.call(this, game, SPAWN_POINT_X, SPAWN_POINT_Y, "dude");
+var Player = function (x, y) {
+    Phaser.Sprite.call(this, game, x, y, "dude");
     game.physics.arcade.enable(this);
     this.body.collideWorldBounds = true;
     this.body.sourceHeight = 100;
@@ -24,10 +22,6 @@ var Player = function () {
 module.exports = Player;
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
-
-Player.prototype.destroy = function() {
-    this.body.destroy();
-}
 
 Player.prototype.update = function() {
     game.debug.body(this, "rgba(0,255,0,1)", false);
