@@ -40,11 +40,11 @@ Player.prototype.checkLocation = function() {
     game.physics.arcade.overlap(this, level.deathLayer, this.die);     
     
     if (this.destination != null) {
-        if (Math.abs(this.position.x - this.destination.x) < MAX_VELOCITY/50) {
+        if (Math.abs(this.position.x - this.destination.x) < MAX_VELOCITY/100) {
             this.body.velocity.x = -(this.position.x - this.destination.x);
             
         }
-        if (Math.abs(this.position.y - this.destination.y) < MAX_VELOCITY/50) {
+        if (Math.abs(this.position.y - this.destination.y) < MAX_VELOCITY/100) {
             this.body.velocity.y = -(this.position.y - this.destination.y);
         }
 
@@ -88,11 +88,16 @@ Level.prototype.create  = function() {
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		this.initializePlayer();
 		this.initializeCamera(this.player);
+		game.camera.follow(this.player);	
 }
 
 Level.prototype.update = function() {
 	this.player.update();
-	this.camera.update();
+}
+
+Level.prototype.render = function() {
+	//game.debug.cameraInfo(game.camera, 32, 32);
+	//game.debug.spriteCoords(this.player, 32, 500);
 }
 
 Level.prototype.initializeMap = function() {
@@ -122,8 +127,8 @@ Level.prototype.initializePlayer = function() {
 }
 
 Level.prototype.initializeCamera = function (target) {
-	this.camera = new Phaser.Camera(game, 1, SPAWN_POINT_X1, SPAWN_POINT_Y1, 1, 1);
-	this.camera.follow(target, 1);
+	//this.camera = new Phaser.Camera(game, 1, SPAWN_POINT_X1, SPAWN_POINT_Y1, 1, 1);
+	//this.camera.follow(target, 1);
 }
  
 Level.prototype.findAllTiles = function() {
@@ -181,7 +186,7 @@ exports.configureText = function(text, color, size) {
 	text.fontSize = size;
 }
 },{}],6:[function(require,module,exports){
-window.game = new Phaser.Game(600, 600, Phaser.AUTO, '');
+window.game = new Phaser.Game(608, 608, Phaser.AUTO, '');
 
 startGame();
 

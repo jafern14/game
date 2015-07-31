@@ -39,11 +39,11 @@ Player.prototype.checkLocation = function() {
     game.physics.arcade.overlap(this, level.deathLayer, this.die);     
     
     if (this.destination != null) {
-        if (Math.abs(this.position.x - this.destination.x) < MAX_VELOCITY/50) {
+        if (Math.abs(this.position.x - this.destination.x) < MAX_VELOCITY/100) {
             this.body.velocity.x = -(this.position.x - this.destination.x);
             
         }
-        if (Math.abs(this.position.y - this.destination.y) < MAX_VELOCITY/50) {
+        if (Math.abs(this.position.y - this.destination.y) < MAX_VELOCITY/100) {
             this.body.velocity.y = -(this.position.y - this.destination.y);
         }
 
