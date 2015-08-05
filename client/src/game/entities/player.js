@@ -29,9 +29,9 @@ Player.prototype.update = function() {
 }
 
 Player.prototype.move = function(pointer) {
-    this.destination = new Phaser.Point(pointer.x, pointer.y);
+    this.destination = new Phaser.Point(game.camera.x + pointer.x, game.camera.y + pointer.y);
     this.rotation = game.physics.arcade.angleToPointer(this.body, pointer) + Math.PI;
-    game.physics.arcade.moveToXY(this, pointer.x, pointer.y, MAX_VELOCITY);
+    game.physics.arcade.moveToXY(this, game.camera.x + pointer.x, game.camera.y + pointer.y, MAX_VELOCITY);
 }
 
 Player.prototype.checkLocation = function() {

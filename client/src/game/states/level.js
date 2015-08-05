@@ -1,7 +1,6 @@
 var SPAWN_POINT_X1 = 30;
 var SPAWN_POINT_Y1 = 120;
-var Player = require("../entities/player")
-//var Camera = require("../entities/camera")
+var Player = require("../entities/player");
 
 var Level = function () {};
 
