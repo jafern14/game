@@ -11,22 +11,22 @@ Level.prototype.create  = function() {
 		this.initializeMap();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		this.initializePlayer();
-		this.initializeCamera(this.player);
-		game.camera.follow(this.player);	
+		this.initializeGameCamera(this.player);
 }
 
 Level.prototype.update = function() {
 	this.player.update();
+	this.moveGameCamera();
 }
 
 Level.prototype.render = function() {
-	//game.debug.cameraInfo(game.camera, 32, 32);
+	//Show game stats - fps, camera location, sprite location
+	game.debug.cameraInfo(game.camera, 32, 32);
 	//game.debug.spriteCoords(this.player, 32, 500);
 }
 
 Level.prototype.initializeMap = function() {
 	this.map = game.add.tilemap("map");
-
 	this.map.addTilesetImage("volcano-tileset", "tiles", 16, 16);
 
 	this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Ground"), game.width, game.height);
@@ -50,9 +50,23 @@ Level.prototype.initializePlayer = function() {
 	this.player = new Player(SPAWN_POINT_X1, SPAWN_POINT_Y1);
 }
 
-Level.prototype.initializeCamera = function (target) {
-	//this.camera = new Phaser.Camera(game, 1, SPAWN_POINT_X1, SPAWN_POINT_Y1, 1, 1);
-	//this.camera.follow(target, 1);
+Level.prototype.initializeGameCamera = function (target) {
+	this.lockGameCameraOnCharacter(target);
+}
+
+Level.prototype.lockGameCameraOnCharacter = function(target) {
+	game.camera.follow(target);
+}
+
+Level.prototype.unlockGameCamera = function() {
+	game.camera.unfollow();
+}
+
+Level.prototype.moveGameCamera = function() {
+	//check if camera is set to follow character
+	if (game.camera.target == null) {
+		//move camera with WASD or arroy keys
+	}
 }
  
 Level.prototype.findAllTiles = function() {
