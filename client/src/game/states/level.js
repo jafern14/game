@@ -14,10 +14,19 @@ Level.prototype.create = function() {
 	this.initializeGameCamera();
 
 	// setup keyboard input
-	game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-	game.input.keyboard.onDownCallback = this.toggleCamera;
+	this.cursors = game.input.keyboard.createCursorKeys();
+	game.input.keyboard.addKey({'space' :Phaser.Keyboard.SPACEBAR});
+	this.wasd = {
+		'up' : game.input.keyboard.addKey(Phaser.Keyboard.W),
+		'down' : game.input.keyboard.addKey(Phaser.Keyboard.S),
+		'left' : game.input.keyboard.addKey(Phaser.Keyboard.A),
+		'right' :game.input.keyboard.addKey(Phaser.Keyboard.D),
+	}
+	game.input.keyboard.space.onDownCallback = this.toggleCamera;
 	// add player to keyboard context
 	game.input.keyboard.player = this.player;
+
+	
 }
 
 Level.prototype.initializeGameCamera = function () {
@@ -26,12 +35,16 @@ Level.prototype.initializeGameCamera = function () {
 }
 
 Level.prototype.toggleCamera = function() {
-	if (game.camera.following === true) {
-		game.camera.following = false;
-		game.camera.unfollow();
-	} else {
-		game.camera.following = true;
-		game.camera.follow(this.player);
+
+	if (this.cursors.space.isDown) {
+		if (game.camera.following === true) {
+			game.camera.following = false;
+			game.camera.unfollow();
+		} else {
+			console.log("following");
+			game.camera.following = true;
+			game.camera.follow(this.player);
+		}	
 	}
 }
 
@@ -75,8 +88,19 @@ Level.prototype.initializePlayer = function() {
 
 Level.prototype.moveGameCamera = function() {
 	//check if camera is set to follow character
-	if (game.camera.target == null) {
-		//move camera with WASD or arroy keys
+	if (game.camera.following == false) {
+		if (this.wasd.up.isDown) {
+			game.camera.y -= 4;
+		}
+		if (this.wasd.down.isDown) {
+			game.camera.y += 4;
+		}
+		if (this.wasd.left.isDown) {
+			game.camera.x -= 4;
+		}
+		if (this.wasd.right.isDown) {
+			game.camera.x += 4;
+		}
 	}
 };
  
