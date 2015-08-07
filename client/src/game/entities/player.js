@@ -19,7 +19,7 @@ var Player = function (x, y) {
     this.anchor.x = .5;
     this.anchor.y = .5;
     //turn character the other direction
-    this.rotation = 3 * Math.PI / 2;
+    this.rotation = Math.PI ;
 
     //create this value for some null check
     this.destination;
@@ -45,7 +45,7 @@ Player.prototype.move = function(pointer) {
     this.destination = new Phaser.Point(game.camera.x + pointer.x, game.camera.y + pointer.y);
 
     //rotate sprite to face the direction it will be moving
-    this.rotation = game.physics.arcade.angleToPointer(this.body, pointer) + Math.PI;
+    this.rotation = game.physics.arcade.angleToXY(this.body, this.destination.x, this.destination.y) + Math.PI;
 
     //move character to the point (player doesnt stop once it hits that point with this method - see checkLocation()) 
     game.physics.arcade.moveToXY(this, game.camera.x + pointer.x, game.camera.y + pointer.y, MAX_VELOCITY);

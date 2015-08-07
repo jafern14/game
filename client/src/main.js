@@ -1,4 +1,4 @@
-window.game = new Phaser.Game(300, 300, Phaser.AUTO, '');
+window.game = new Phaser.Game(608, 608, Phaser.AUTO, '');
 
 startGame();
 

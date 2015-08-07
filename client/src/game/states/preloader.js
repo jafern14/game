@@ -7,10 +7,10 @@ module.exports = Preloader;
 Preloader.prototype = {
 	preload: function() {
 		this.displayLoader();
-
 		this.load.tilemap("map", "assets/map/Lava-1.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/volcano-tileset.png");
 		this.load.spritesheet("dude", "assets/textures/enemy.png");
+		this.load.spritesheet("enemy", "assets/textures/zombie.png", 157, 102)
 
 		cursors = game.input.keyboard.createCursorKeys();
 		mouse = game.input.mouse;

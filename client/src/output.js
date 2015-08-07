@@ -1,4 +1,77 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var Enemy = function (startX, startY, endX, endY, _velocity) {
+    Phaser.Sprite.call(this, game, startX, startY, "enemy");
+    game.physics.arcade.enable(this);
+
+    this.body.collideWorldBounds = true;
+
+    this.body.sourceHeight = 100;
+    this.body.sourceWidth = 100;
+
+    
+    this.velocity = _velocity;
+
+    this.startPoint = new Phaser.Point(startX, startY);
+    this.endPoint = new Phaser.Point(endX, endY); 
+    this.moveToEnd = false;
+
+    this.scale.set(.3,.3);
+    this.anchor.x = .5;
+    this.anchor.y = .5;
+    this.rotation = Math.PI / 2;
+
+    this.animations.add("walk");
+    this.animations.play("walk", 6, true);
+
+    //set bounding box
+    this.body.collideWorldBounds = true;
+    
+    game.add.existing(this);
+}
+
+module.exports = Enemy;
+
+Enemy.prototype = Object.create(Phaser.Sprite.prototype);
+
+Enemy.prototype.update = function() {
+    game.debug.body(this, "rgba(255,0,0,2)", false);
+    this.move();
+}
+
+Enemy.prototype.move = function () {
+    if (this.reachedDestination()) { 
+        destination = null;
+
+        if (this.moveToEnd) {
+            this.moveToEnd = false;
+            destination = this.startPoint;
+        } 
+        else {
+            this.moveToEnd = true;
+            destination = this.endPoint;
+        }
+        //rotate sprite to face the direction it will be moving
+        this.rotation = game.physics.arcade.angleToXY(this.body, destination.x, destination.y);
+        //move character to the point (player doesnt stop once it hits that point with this method - see checkLocation()) 
+        game.physics.arcade.moveToXY(this, destination.x, destination.y, this.velocity);
+
+    }
+}
+
+Enemy.prototype.reachedDestination = function () {
+    if (this.moveToEnd) {
+        if (this.position.x >= this.endPoint.x && this.position.y >= this.endPoint.y) {
+            return true;   
+        }
+    }
+    else {
+        if (this.position.x <= this.startPoint.x && this.position.y <= this.startPoint.y) {
+            return true;   
+        }
+    }
+    return false;
+}
+},{}],2:[function(require,module,exports){
 var MAX_VELOCITY = 150;
 
 var Player = function (x, y) {
@@ -20,7 +93,7 @@ var Player = function (x, y) {
     this.anchor.x = .5;
     this.anchor.y = .5;
     //turn character the other direction
-    this.rotation = 3 * Math.PI / 2;
+    this.rotation = Math.PI ;
 
     //create this value for some null check
     this.destination;
@@ -46,7 +119,7 @@ Player.prototype.move = function(pointer) {
     this.destination = new Phaser.Point(game.camera.x + pointer.x, game.camera.y + pointer.y);
 
     //rotate sprite to face the direction it will be moving
-    this.rotation = game.physics.arcade.angleToPointer(this.body, pointer) + Math.PI;
+    this.rotation = game.physics.arcade.angleToXY(this.body, this.destination.x, this.destination.y) + Math.PI;
 
     //move character to the point (player doesnt stop once it hits that point with this method - see checkLocation()) 
     game.physics.arcade.moveToXY(this, game.camera.x + pointer.x, game.camera.y + pointer.y, MAX_VELOCITY);
@@ -78,7 +151,7 @@ Player.prototype.checkLocation = function() {
     }
 }
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 var Boot = function() {};
 
 module.exports = Boot;
@@ -96,32 +169,36 @@ Boot.prototype = {
 		game.state.start("Preloader");
 	}
 }
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var SPAWN_POINT_X1 = 30;
 var SPAWN_POINT_Y1 = 120;
 var Player = require("../entities/player");
+var Enemy = require("../entities/enemy");
 
 var Level = function () {};
 
 module.exports = Level;
 
 Level.prototype.create = function() { 
+	// initialize things
 	level = this;
 	this.initializeMap();
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 	this.initializePlayer();
+	this.initializeEnemies();
 	this.initializeGameCamera();
 
 	// setup keyboard input
 	this.cursors = game.input.keyboard.createCursorKeys();
-	game.input.keyboard.addKey({'space' :Phaser.Keyboard.SPACEBAR});
+	game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 	this.wasd = {
 		'up' : game.input.keyboard.addKey(Phaser.Keyboard.W),
 		'down' : game.input.keyboard.addKey(Phaser.Keyboard.S),
 		'left' : game.input.keyboard.addKey(Phaser.Keyboard.A),
 		'right' :game.input.keyboard.addKey(Phaser.Keyboard.D),
 	}
-	game.input.keyboard.space.onDownCallback = this.toggleCamera;
+	//on keyboard input toggle camera
+	game.input.keyboard.onDownCallback = this.toggleCamera;
 	// add player to keyboard context
 	game.input.keyboard.player = this.player;
 
@@ -129,50 +206,56 @@ Level.prototype.create = function() {
 }
 
 Level.prototype.initializeGameCamera = function () {
+	//set camaera to follow character
 	game.camera.following = true;
 	game.camera.follow(this.player);
 }
 
 Level.prototype.toggleCamera = function() {
-
-	if (this.cursors.space.isDown) {
+	//if spacebar was hit, toggle camera
+	if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
 		if (game.camera.following === true) {
+			//unfollow
 			game.camera.following = false;
 			game.camera.unfollow();
 		} else {
-			console.log("following");
+			//follow player
 			game.camera.following = true;
 			game.camera.follow(this.player);
 		}	
-	}
+	}	
 }
 
 Level.prototype.update = function() {
-	this.player.update();
-	game.camera.update();
+	//game camera updates
 	this.moveGameCamera();
 };
 
 Level.prototype.render = function() {
 	//Show game stats - fps, camera location, sprite location
 	//game.debug.cameraInfo(game.camera, 32, 32);
-	//game.debug.spriteCoords(this.player, 32, 500);
+	//game.debug.spriteCoords(this.enemy, 32, 500);
 };
 
 Level.prototype.initializeMap = function() {
+	//read from tilemap "map"
 	this.map = game.add.tilemap("map");
+	//tileset = volcano-set (inside Lava-1.json, tiles is from preloaded image
 	this.map.addTilesetImage("volcano-tileset", "tiles", 16, 16);
 
+	//Create Ground Layer
 	this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Ground"), game.width, game.height);
 	game.world.addAt(this.groundLayer, 0);
 	this.groundLayer.resizeWorld();		
 	
+	//Create Wall Layer, add collision tiles, eneable physics. 
 	this.blockLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Wall"), game.width, game.height);
     game.world.addAt(this.blockLayer, 1);
     this.map.setCollision([160, 161, 189, 190, 191, 192, 220, 221, 222], true, "Wall");
 	this.blockLayer.resizeWorld(); 
 	game.physics.arcade.enable(this.blockLayer);
 
+	//Create Death Layer, add collision tiles, enable physics.
 	this.deathLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Lava"), game.width, game.height);
     game.world.addAt(this.deathLayer, 2);
     this.map.setCollision([121, 124, 152, 154, 184, 211, 213, 214, 400, 401, 402, 430, 431, 432, 460, 461, 462], true, "Lava");		
@@ -181,13 +264,25 @@ Level.prototype.initializeMap = function() {
 };
 
 Level.prototype.initializePlayer = function() {
+	// create a new player at that spawn location.
 	this.player = new Player(SPAWN_POINT_X1, SPAWN_POINT_Y1);
 };
+
+Level.prototype.initializeEnemies = function() {
+	this.enemies = 
+	[
+		new Enemy(200, 200, 500, 300, 100),
+		new Enemy(100, 200, 200, 350, 100),
+		new Enemy(250, 150, 400, 300, 100),
+		new Enemy(100, 200, 400, 300, 100)
+	];
+}
 
 
 Level.prototype.moveGameCamera = function() {
 	//check if camera is set to follow character
 	if (game.camera.following == false) {
+		// move camera
 		if (this.wasd.up.isDown) {
 			game.camera.y -= 4;
 		}
@@ -218,7 +313,7 @@ Level.prototype.findAllTiles = function() {
 	    }
 	    console.log(m);
 };
-},{"../entities/player":1}],4:[function(require,module,exports){
+},{"../entities/enemy":1,"../entities/player":2}],5:[function(require,module,exports){
 var TextConfigurer = require("../util/text_configurer")
 
 var Preloader = function() {};
@@ -228,10 +323,10 @@ module.exports = Preloader;
 Preloader.prototype = {
 	preload: function() {
 		this.displayLoader();
-
 		this.load.tilemap("map", "assets/map/Lava-1.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/volcano-tileset.png");
 		this.load.spritesheet("dude", "assets/textures/enemy.png");
+		this.load.spritesheet("enemy", "assets/textures/zombie.png", 157, 102)
 
 		cursors = game.input.keyboard.createCursorKeys();
 		mouse = game.input.mouse;
@@ -251,14 +346,14 @@ Preloader.prototype = {
 	    });
 	}
 } 
-},{"../util/text_configurer":5}],5:[function(require,module,exports){
+},{"../util/text_configurer":6}],6:[function(require,module,exports){
 exports.configureText = function(text, color, size) {
 	text.font = "Carter One";
 	text.fill = color;
 	text.fontSize = size;
 }
-},{}],6:[function(require,module,exports){
-window.game = new Phaser.Game(300, 300, Phaser.AUTO, '');
+},{}],7:[function(require,module,exports){
+window.game = new Phaser.Game(608, 608, Phaser.AUTO, '');
 
 startGame();
 
@@ -269,4 +364,4 @@ function startGame() {
     game.state.add("Level", require("./game/states/level"));
 	game.state.start("Boot");
 };3
-},{"./game/states/boot":2,"./game/states/level":3,"./game/states/preloader":4}]},{},[6]);
+},{"./game/states/boot":3,"./game/states/level":4,"./game/states/preloader":5}]},{},[7]);
