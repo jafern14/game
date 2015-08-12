@@ -2,6 +2,7 @@ var SPAWN_POINT_X1 = 30;
 var SPAWN_POINT_Y1 = 120;
 var Player = require("../entities/player");
 var Enemy = require("../entities/enemy");
+var Checkpoint = require("../entities/checkpoint");
 
 var Level = function () {};
 
@@ -11,9 +12,10 @@ Level.prototype.create = function() {
 	// initialize things
 	level = this;
 	this.initializeMap();
+	this.initializeCheckpoints();
 	game.physics.startSystem(Phaser.Physics.ARCADE);
-	this.initializePlayer();
 	this.initializeEnemies();
+	this.initializePlayer();
 	this.initializeGameCamera();
 
 	// setup keyboard input
@@ -23,21 +25,19 @@ Level.prototype.create = function() {
 		'up' : game.input.keyboard.addKey(Phaser.Keyboard.W),
 		'down' : game.input.keyboard.addKey(Phaser.Keyboard.S),
 		'left' : game.input.keyboard.addKey(Phaser.Keyboard.A),
-		'right' :game.input.keyboard.addKey(Phaser.Keyboard.D),
+		'right' :game.input.keyboard.addKey(Phaser.Keyboard.D)
 	}
 	//on keyboard input toggle camera
 	game.input.keyboard.onDownCallback = this.toggleCamera;
 	// add player to keyboard context
 	game.input.keyboard.player = this.player;
-
-	
-}
+};
 
 Level.prototype.initializeGameCamera = function () {
 	//set camaera to follow character
 	game.camera.following = true;
 	game.camera.follow(this.player);
-}
+};
 
 Level.prototype.toggleCamera = function() {
 	//if spacebar was hit, toggle camera
@@ -52,11 +52,16 @@ Level.prototype.toggleCamera = function() {
 			game.camera.follow(this.player);
 		}	
 	}	
-}
+};
 
 Level.prototype.update = function() {
 	//game camera updates
 	this.moveGameCamera();
+	
+	//disply checkpoints squares
+	for (i = 0; i < this.checkpoints.length; i++) {
+		this.checkpoints[i].update();	
+	}
 };
 
 Level.prototype.render = function() {
@@ -93,7 +98,15 @@ Level.prototype.initializeMap = function() {
 
 Level.prototype.initializePlayer = function() {
 	// create a new player at that spawn location.
-	this.player = new Player(SPAWN_POINT_X1, SPAWN_POINT_Y1);
+	lastCheckpoint = new Checkpoint(0,0,0,0,false,0);
+
+	for (i = 0; i < this.checkpoints.length; i++) {
+		if (this.checkpoints[i].activated && this.checkpoints[i].order > lastCheckpoint.order) {
+			lastCheckpoint = this.checkpoints[i];	
+		}	
+	}
+
+	this.player = new Player(lastCheckpoint.body.center.x, lastCheckpoint.body.center.y);
 };
 
 Level.prototype.initializeEnemies = function() {
@@ -104,8 +117,17 @@ Level.prototype.initializeEnemies = function() {
 		new Enemy(250, 150, 400, 300, 100),
 		new Enemy(100, 200, 400, 300, 100)
 	];
-}
+};
 
+Level.prototype.initializeCheckpoints = function() {
+	this.checkpoints = 
+	[
+		new Checkpoint(0, 80, 64, 80, true, 1),
+		new Checkpoint(336, 542, 80, 64, false, 2),
+		new Checkpoint(750, 96, 80, 48, false, 3),
+		new Checkpoint(1506, 338, 92, 80, false, 4)		
+	];
+};
 
 Level.prototype.moveGameCamera = function() {
 	//check if camera is set to follow character

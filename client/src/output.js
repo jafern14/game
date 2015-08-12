@@ -1,4 +1,23 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var Checkpoint = function (x, y, width, height, activated, order) {
+    Phaser.Sprite.call(this, game, x, y, null);
+	game.physics.enable(this, Phaser.Physics.ARCADE);
+	this.body.setSize(width, height, 0, 0);
+
+    this.order = order;
+    this.activated = activated;
+    //add sprite to game
+    game.debug.geom(this ,'rbga(0, 0, 255, 1)', false);
+}
+
+module.exports = Checkpoint;
+
+Checkpoint.prototype = Object.create(Phaser.Sprite.prototype);
+
+Checkpoint.prototype.update = function() {
+    game.debug.body(this, "rbga(0, 0, 255, 1)", false);
+}
+},{}],2:[function(require,module,exports){
 var Enemy = function (startX, startY, endX, endY, _velocity) {
     Phaser.Sprite.call(this, game, startX, startY, "enemy");
     game.physics.arcade.enable(this);
@@ -71,7 +90,7 @@ Enemy.prototype.reachedDestination = function () {
     }
     return false;
 }
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 var MAX_VELOCITY = 150;
 
 var Player = function (x, y) {
@@ -108,11 +127,11 @@ Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 Player.prototype.update = function() {
     //display bounding box
-    game.debug.body(this, "rgba(0,255,0,1)", false);
+    game.debug.body(this, "rgba(0,255,0,100)", false);
 
     //if player is moving this will tell it when to stop
     this.checkLocation();    
-}
+};
 
 Player.prototype.move = function(pointer) {
     //players destination is written according to world view. (not camera)
@@ -123,15 +142,25 @@ Player.prototype.move = function(pointer) {
 
     //move character to the point (player doesnt stop once it hits that point with this method - see checkLocation()) 
     game.physics.arcade.moveToXY(this, game.camera.x + pointer.x, game.camera.y + pointer.y, MAX_VELOCITY);
-}
+};
 
 Player.prototype.checkLocation = function() {
     //check contact with rock walls
     game.physics.arcade.overlap(this, level.blockLayer);
 
     //check contact with lava - add "die" callback if contact is made
-    game.physics.arcade.overlap(this, level.deathLayer, this.die);     
+    game.physics.arcade.overlap(this, level.deathLayer, this.die);
     
+    //check for contact with checkpoints
+    for (i = 0; i < level.checkpoints.length; i++) {
+        game.physics.arcade.overlap(this, level.checkpoints[i], this.activateCheckpoint)    
+    }
+
+    //check for contact with enemies
+    for (i = 0; i < level.enemies.length; i++) {
+        game.physics.arcade.overlap(this, level.enemies[i], this.die)    
+    }
+
     //if there is no contact, stop the character from moving after they've reached their destination
     //made it approximate destination because its unlikely it will end on that exact location
     if (this.destination != null) {
@@ -151,7 +180,19 @@ Player.prototype.checkLocation = function() {
     }
 }
 
-},{}],3:[function(require,module,exports){
+Player.prototype.die = function() {
+    console.log("die")
+}
+
+Player.prototype.activateCheckpoint = function(checkpoint) {
+    //activate
+    if (checkpoint.activated == false) {
+        console.log(checkpoint)  
+        checkpoint.activated = true  
+    }
+    
+}
+},{}],4:[function(require,module,exports){
 var Boot = function() {};
 
 module.exports = Boot;
@@ -169,11 +210,12 @@ Boot.prototype = {
 		game.state.start("Preloader");
 	}
 }
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var SPAWN_POINT_X1 = 30;
 var SPAWN_POINT_Y1 = 120;
 var Player = require("../entities/player");
 var Enemy = require("../entities/enemy");
+var Checkpoint = require("../entities/checkpoint");
 
 var Level = function () {};
 
@@ -183,9 +225,10 @@ Level.prototype.create = function() {
 	// initialize things
 	level = this;
 	this.initializeMap();
+	this.initializeCheckpoints();
 	game.physics.startSystem(Phaser.Physics.ARCADE);
-	this.initializePlayer();
 	this.initializeEnemies();
+	this.initializePlayer();
 	this.initializeGameCamera();
 
 	// setup keyboard input
@@ -195,21 +238,19 @@ Level.prototype.create = function() {
 		'up' : game.input.keyboard.addKey(Phaser.Keyboard.W),
 		'down' : game.input.keyboard.addKey(Phaser.Keyboard.S),
 		'left' : game.input.keyboard.addKey(Phaser.Keyboard.A),
-		'right' :game.input.keyboard.addKey(Phaser.Keyboard.D),
+		'right' :game.input.keyboard.addKey(Phaser.Keyboard.D)
 	}
 	//on keyboard input toggle camera
 	game.input.keyboard.onDownCallback = this.toggleCamera;
 	// add player to keyboard context
 	game.input.keyboard.player = this.player;
-
-	
-}
+};
 
 Level.prototype.initializeGameCamera = function () {
 	//set camaera to follow character
 	game.camera.following = true;
 	game.camera.follow(this.player);
-}
+};
 
 Level.prototype.toggleCamera = function() {
 	//if spacebar was hit, toggle camera
@@ -224,11 +265,16 @@ Level.prototype.toggleCamera = function() {
 			game.camera.follow(this.player);
 		}	
 	}	
-}
+};
 
 Level.prototype.update = function() {
 	//game camera updates
 	this.moveGameCamera();
+	
+	//disply checkpoints squares
+	for (i = 0; i < this.checkpoints.length; i++) {
+		this.checkpoints[i].update();	
+	}
 };
 
 Level.prototype.render = function() {
@@ -265,7 +311,15 @@ Level.prototype.initializeMap = function() {
 
 Level.prototype.initializePlayer = function() {
 	// create a new player at that spawn location.
-	this.player = new Player(SPAWN_POINT_X1, SPAWN_POINT_Y1);
+	lastCheckpoint = new Checkpoint(0,0,0,0,false,0);
+
+	for (i = 0; i < this.checkpoints.length; i++) {
+		if (this.checkpoints[i].activated && this.checkpoints[i].order > lastCheckpoint.order) {
+			lastCheckpoint = this.checkpoints[i];	
+		}	
+	}
+
+	this.player = new Player(lastCheckpoint.body.center.x, lastCheckpoint.body.center.y);
 };
 
 Level.prototype.initializeEnemies = function() {
@@ -276,8 +330,17 @@ Level.prototype.initializeEnemies = function() {
 		new Enemy(250, 150, 400, 300, 100),
 		new Enemy(100, 200, 400, 300, 100)
 	];
-}
+};
 
+Level.prototype.initializeCheckpoints = function() {
+	this.checkpoints = 
+	[
+		new Checkpoint(0, 80, 64, 80, true, 1),
+		new Checkpoint(336, 542, 80, 64, false, 2),
+		new Checkpoint(750, 96, 80, 48, false, 3),
+		new Checkpoint(1506, 338, 92, 80, false, 4)		
+	];
+};
 
 Level.prototype.moveGameCamera = function() {
 	//check if camera is set to follow character
@@ -313,7 +376,7 @@ Level.prototype.findAllTiles = function() {
 	    }
 	    console.log(m);
 };
-},{"../entities/enemy":1,"../entities/player":2}],5:[function(require,module,exports){
+},{"../entities/checkpoint":1,"../entities/enemy":2,"../entities/player":3}],6:[function(require,module,exports){
 var TextConfigurer = require("../util/text_configurer")
 
 var Preloader = function() {};
@@ -346,13 +409,13 @@ Preloader.prototype = {
 	    });
 	}
 } 
-},{"../util/text_configurer":6}],6:[function(require,module,exports){
+},{"../util/text_configurer":7}],7:[function(require,module,exports){
 exports.configureText = function(text, color, size) {
 	text.font = "Carter One";
 	text.fill = color;
 	text.fontSize = size;
 }
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 window.game = new Phaser.Game(608, 608, Phaser.AUTO, '');
 
 startGame();
@@ -364,4 +427,4 @@ function startGame() {
     game.state.add("Level", require("./game/states/level"));
 	game.state.start("Boot");
 };3
-},{"./game/states/boot":3,"./game/states/level":4,"./game/states/preloader":5}]},{},[7]);
+},{"./game/states/boot":4,"./game/states/level":5,"./game/states/preloader":6}]},{},[8]);

@@ -34,11 +34,11 @@ Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 Player.prototype.update = function() {
     //display bounding box
-    game.debug.body(this, "rgba(0,255,0,1)", false);
+    game.debug.body(this, "rgba(0,255,0,100)", false);
 
     //if player is moving this will tell it when to stop
     this.checkLocation();    
-}
+};
 
 Player.prototype.move = function(pointer) {
     //players destination is written according to world view. (not camera)
@@ -49,15 +49,25 @@ Player.prototype.move = function(pointer) {
 
     //move character to the point (player doesnt stop once it hits that point with this method - see checkLocation()) 
     game.physics.arcade.moveToXY(this, game.camera.x + pointer.x, game.camera.y + pointer.y, MAX_VELOCITY);
-}
+};
 
 Player.prototype.checkLocation = function() {
     //check contact with rock walls
     game.physics.arcade.overlap(this, level.blockLayer);
 
     //check contact with lava - add "die" callback if contact is made
-    game.physics.arcade.overlap(this, level.deathLayer, this.die);     
+    game.physics.arcade.overlap(this, level.deathLayer, this.die);
     
+    //check for contact with checkpoints
+    for (i = 0; i < level.checkpoints.length; i++) {
+        game.physics.arcade.overlap(this, level.checkpoints[i], this.activateCheckpoint)    
+    }
+
+    //check for contact with enemies
+    for (i = 0; i < level.enemies.length; i++) {
+        game.physics.arcade.overlap(this, level.enemies[i], this.die)    
+    }
+
     //if there is no contact, stop the character from moving after they've reached their destination
     //made it approximate destination because its unlikely it will end on that exact location
     if (this.destination != null) {
@@ -75,4 +85,17 @@ Player.prototype.checkLocation = function() {
             this.destination == null;
         }
     }
+}
+
+Player.prototype.die = function() {
+    console.log("die")
+}
+
+Player.prototype.activateCheckpoint = function(checkpoint) {
+    //activate
+    if (checkpoint.activated == false) {
+        console.log(checkpoint)  
+        checkpoint.activated = true  
+    }
+    
 }
