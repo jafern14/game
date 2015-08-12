@@ -101,7 +101,7 @@ var Player = function (x, y) {
     this.body.collideWorldBounds = true;
     this.body.sourceHeight = 100;
     this.body.sourceWidth = 100;
-
+    
     //initialize the "onclick" function
     game.input.onDown.add(this.move, this);
 
@@ -149,16 +149,20 @@ Player.prototype.checkLocation = function() {
     game.physics.arcade.overlap(this, level.blockLayer);
 
     //check contact with lava - add "die" callback if contact is made
-    game.physics.arcade.overlap(this, level.deathLayer, this.die);
-    
+    game.physics.arcade.overlap(this, level.deathLayer, level.killGranny);
+
     //check for contact with checkpoints
     for (i = 0; i < level.checkpoints.length; i++) {
-        game.physics.arcade.overlap(this, level.checkpoints[i], this.activateCheckpoint)    
-    }
+        game.physics.arcade.overlap(this, level.checkpoints[i], function() {
+            if (level.checkpoints[i].activated == false) {
+                level.checkpoints[i].activated = true;
+            }   
+        });
+    }  
 
     //check for contact with enemies
     for (i = 0; i < level.enemies.length; i++) {
-        game.physics.arcade.overlap(this, level.enemies[i], this.die)    
+        game.physics.arcade.overlap(this, level.enemies[i], level.killGranny)    
     }
 
     //if there is no contact, stop the character from moving after they've reached their destination
@@ -180,17 +184,15 @@ Player.prototype.checkLocation = function() {
     }
 }
 
-Player.prototype.die = function() {
-    console.log("die")
+Player.prototype.activateCheckpoint = function(checkpoint) {
+    if (!checkpoint.activated) {
+        console.log(checkpoint)   
+    }
 }
 
-Player.prototype.activateCheckpoint = function(checkpoint) {
-    //activate
-    if (checkpoint.activated == false) {
-        console.log(checkpoint)  
-        checkpoint.activated = true  
-    }
-    
+Player.prototype.die = function() {
+
+    //setTimeout(function(){},1000);
 }
 },{}],4:[function(require,module,exports){
 var Boot = function() {};
@@ -211,8 +213,6 @@ Boot.prototype = {
 	}
 }
 },{}],5:[function(require,module,exports){
-var SPAWN_POINT_X1 = 30;
-var SPAWN_POINT_Y1 = 120;
 var Player = require("../entities/player");
 var Enemy = require("../entities/enemy");
 var Checkpoint = require("../entities/checkpoint");
@@ -223,12 +223,13 @@ module.exports = Level;
 
 Level.prototype.create = function() { 
 	// initialize things
+	this.lives = 10;
 	level = this;
 	this.initializeMap();
 	this.initializeCheckpoints();
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 	this.initializeEnemies();
-	this.initializePlayer();
+	this.player = this.initializePlayer();
 	this.initializeGameCamera();
 
 	// setup keyboard input
@@ -246,11 +247,25 @@ Level.prototype.create = function() {
 	game.input.keyboard.player = this.player;
 };
 
-Level.prototype.initializeGameCamera = function () {
-	//set camaera to follow character
-	game.camera.following = true;
-	game.camera.follow(this.player);
-};
+Level.prototype.killGranny = function() {
+	console.log(level.lives)	
+	if (level.lives > 0) {
+		level.lives --;
+		//level.player.die();
+		//level.player.body = null;
+		level.player.kill();
+		//level.player = null;
+
+		//setTimeout(function(){},1000);
+		level.player = level.initializePlayer();
+		level.initializeGameCamera();
+	} 
+	else {
+		console.log("game over")
+	}
+
+
+}
 
 Level.prototype.toggleCamera = function() {
 	//if spacebar was hit, toggle camera
@@ -281,6 +296,12 @@ Level.prototype.render = function() {
 	//Show game stats - fps, camera location, sprite location
 	//game.debug.cameraInfo(game.camera, 32, 32);
 	//game.debug.spriteCoords(this.enemy, 32, 500);
+};
+
+Level.prototype.initializeGameCamera = function () {
+	//set camaera to follow character
+	game.camera.following = true;
+	game.camera.follow(this.player);
 };
 
 Level.prototype.initializeMap = function() {
@@ -319,7 +340,7 @@ Level.prototype.initializePlayer = function() {
 		}	
 	}
 
-	this.player = new Player(lastCheckpoint.body.center.x, lastCheckpoint.body.center.y);
+	return new Player(lastCheckpoint.body.center.x, lastCheckpoint.body.center.y);
 };
 
 Level.prototype.initializeEnemies = function() {

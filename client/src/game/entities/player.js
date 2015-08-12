@@ -8,7 +8,7 @@ var Player = function (x, y) {
     this.body.collideWorldBounds = true;
     this.body.sourceHeight = 100;
     this.body.sourceWidth = 100;
-
+    
     //initialize the "onclick" function
     game.input.onDown.add(this.move, this);
 
@@ -56,16 +56,20 @@ Player.prototype.checkLocation = function() {
     game.physics.arcade.overlap(this, level.blockLayer);
 
     //check contact with lava - add "die" callback if contact is made
-    game.physics.arcade.overlap(this, level.deathLayer, this.die);
-    
+    game.physics.arcade.overlap(this, level.deathLayer, level.killGranny);
+
     //check for contact with checkpoints
     for (i = 0; i < level.checkpoints.length; i++) {
-        game.physics.arcade.overlap(this, level.checkpoints[i], this.activateCheckpoint)    
-    }
+        game.physics.arcade.overlap(this, level.checkpoints[i], function() {
+            if (level.checkpoints[i].activated == false) {
+                level.checkpoints[i].activated = true;
+            }   
+        });
+    }  
 
     //check for contact with enemies
     for (i = 0; i < level.enemies.length; i++) {
-        game.physics.arcade.overlap(this, level.enemies[i], this.die)    
+        game.physics.arcade.overlap(this, level.enemies[i], level.killGranny)    
     }
 
     //if there is no contact, stop the character from moving after they've reached their destination
@@ -87,15 +91,13 @@ Player.prototype.checkLocation = function() {
     }
 }
 
-Player.prototype.die = function() {
-    console.log("die")
+Player.prototype.activateCheckpoint = function(checkpoint) {
+    if (!checkpoint.activated) {
+        console.log(checkpoint)   
+    }
 }
 
-Player.prototype.activateCheckpoint = function(checkpoint) {
-    //activate
-    if (checkpoint.activated == false) {
-        console.log(checkpoint)  
-        checkpoint.activated = true  
-    }
-    
+Player.prototype.die = function() {
+
+    //setTimeout(function(){},1000);
 }

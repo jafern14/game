@@ -1,5 +1,3 @@
-var SPAWN_POINT_X1 = 30;
-var SPAWN_POINT_Y1 = 120;
 var Player = require("../entities/player");
 var Enemy = require("../entities/enemy");
 var Checkpoint = require("../entities/checkpoint");
@@ -10,12 +8,13 @@ module.exports = Level;
 
 Level.prototype.create = function() { 
 	// initialize things
+	this.lives = 10;
 	level = this;
 	this.initializeMap();
 	this.initializeCheckpoints();
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 	this.initializeEnemies();
-	this.initializePlayer();
+	this.player = this.initializePlayer();
 	this.initializeGameCamera();
 
 	// setup keyboard input
@@ -33,11 +32,25 @@ Level.prototype.create = function() {
 	game.input.keyboard.player = this.player;
 };
 
-Level.prototype.initializeGameCamera = function () {
-	//set camaera to follow character
-	game.camera.following = true;
-	game.camera.follow(this.player);
-};
+Level.prototype.killGranny = function() {
+	console.log(level.lives)	
+	if (level.lives > 0) {
+		level.lives --;
+		//level.player.die();
+		//level.player.body = null;
+		level.player.kill();
+		//level.player = null;
+
+		//setTimeout(function(){},1000);
+		level.player = level.initializePlayer();
+		level.initializeGameCamera();
+	} 
+	else {
+		console.log("game over")
+	}
+
+
+}
 
 Level.prototype.toggleCamera = function() {
 	//if spacebar was hit, toggle camera
@@ -68,6 +81,12 @@ Level.prototype.render = function() {
 	//Show game stats - fps, camera location, sprite location
 	//game.debug.cameraInfo(game.camera, 32, 32);
 	//game.debug.spriteCoords(this.enemy, 32, 500);
+};
+
+Level.prototype.initializeGameCamera = function () {
+	//set camaera to follow character
+	game.camera.following = true;
+	game.camera.follow(this.player);
 };
 
 Level.prototype.initializeMap = function() {
@@ -106,7 +125,7 @@ Level.prototype.initializePlayer = function() {
 		}	
 	}
 
-	this.player = new Player(lastCheckpoint.body.center.x, lastCheckpoint.body.center.y);
+	return new Player(lastCheckpoint.body.center.x, lastCheckpoint.body.center.y);
 };
 
 Level.prototype.initializeEnemies = function() {
