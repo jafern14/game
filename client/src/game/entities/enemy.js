@@ -33,7 +33,7 @@ module.exports = Enemy;
 Enemy.prototype = Object.create(Phaser.Sprite.prototype);
 
 Enemy.prototype.update = function() {
-    game.debug.body(this, "rgba(255,0,0,2)", false);
+    //game.debug.body(this, "rgba(255,0,0,2)", false);
     this.move();
 }
 

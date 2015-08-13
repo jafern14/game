@@ -1,6 +1,7 @@
 var Player = require("../entities/player");
 var Enemy = require("../entities/enemy");
 var Checkpoint = require("../entities/checkpoint");
+var TextConfigurer = require("../util/text_configurer")
 
 var Level = function () {};
 
@@ -30,26 +31,31 @@ Level.prototype.create = function() {
 	game.input.keyboard.onDownCallback = this.toggleCamera;
 	// add player to keyboard context
 	game.input.keyboard.player = this.player;
+
+	this.addHUD();
+	
+	
 };
 
-Level.prototype.killGranny = function() {
-	console.log(level.lives)	
+Level.prototype.addHUD = function () {
+	this.text = game.add.text(10, 10, "Lives: " + this.lives);
+	TextConfigurer.configureText(this.text, "white", 32);
+	this.text.fixedToCamera = true;
+
+}
+
+Level.prototype.killGranny = function() {	
 	if (level.lives > 0) {
 		level.lives --;
-		//level.player.die();
-		//level.player.body = null;
 		level.player.kill();
-		//level.player = null;
-
-		//setTimeout(function(){},1000);
 		level.player = level.initializePlayer();
 		level.initializeGameCamera();
+		level.text.destroy();
+		level.addHUD();
 	} 
 	else {
-		console.log("game over")
+		game.state.start("Level");
 	}
-
-
 }
 
 Level.prototype.toggleCamera = function() {
@@ -131,10 +137,20 @@ Level.prototype.initializePlayer = function() {
 Level.prototype.initializeEnemies = function() {
 	this.enemies = 
 	[
-		new Enemy(200, 200, 500, 300, 100),
-		new Enemy(100, 200, 200, 350, 100),
-		new Enemy(250, 150, 400, 300, 100),
-		new Enemy(100, 200, 400, 300, 100)
+		//new Enemy(200, 200, 500, 300, 100),
+		//new Enemy(100, 200, 200, 350, 100),
+		//new Enemy(250, 150, 400, 300, 100),
+		new Enemy(1030, 105, 1030, 150, 50),
+		new Enemy(875, 220, 950, 220, 50),
+		new Enemy(865, 210, 865, 530, 150),
+		new Enemy(715, 125, 715, 355, 100),
+		new Enemy(500, 525, 700, 525, 100),
+		new Enemy(175, 525, 300, 525, 100),
+		new Enemy(175, 360, 450, 360, 150),
+		new Enemy(225, 115, 400, 115, 100),
+		new Enemy(275, 175, 450, 175, 125),
+		new Enemy(135, 275, 215, 275, 75),
+		new Enemy(85, 200, 85, 450, 100)
 	];
 };
 
