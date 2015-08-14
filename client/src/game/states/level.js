@@ -38,10 +38,20 @@ Level.prototype.create = function() {
 };
 
 Level.prototype.addHUD = function () {
-	this.text = game.add.text(10, 10, "Lives: " + this.lives);
-	TextConfigurer.configureText(this.text, "white", 32);
-	this.text.fixedToCamera = true;
+	if (this.livesText != null) {
+		this.livesText.destroy(); 
+	}
 
+	this.livesText = game.add.text(10, 10, "Lives: " + this.lives);
+	TextConfigurer.configureText(this.livesText, "white", 32);
+	this.livesText.fixedToCamera = true;
+
+	if (this.cameraText != null) {
+		this.cameraText.destroy(); 
+	}
+	this.cameraText = game.add.text(10, 48, "Camera: Locked")
+	TextConfigurer.configureText(this.cameraText, "white", 16);
+	this.cameraText .fixedToCamera = true;
 }
 
 Level.prototype.killGranny = function() {	
@@ -50,7 +60,7 @@ Level.prototype.killGranny = function() {
 		level.player.kill();
 		level.player = level.initializePlayer();
 		level.initializeGameCamera();
-		level.text.destroy();
+		level.livesText.destroy();
 		level.addHUD();
 	} 
 	else {
@@ -65,10 +75,21 @@ Level.prototype.toggleCamera = function() {
 			//unfollow
 			game.camera.following = false;
 			game.camera.unfollow();
+
+			level.cameraText.destroy();
+			level.cameraText = game.add.text(10, 48, "Camera: Free")
+			TextConfigurer.configureText(level.cameraText, "white", 16);
+			level.cameraText.fixedToCamera = true;
 		} else {
 			//follow player
 			game.camera.following = true;
 			game.camera.follow(this.player);
+
+
+			level.cameraText.destroy();
+			level.cameraText = game.add.text(10, 48, "Camera: Locked")
+			TextConfigurer.configureText(level.cameraText, "white", 16);
+			level.cameraText.fixedToCamera = true;
 		}	
 	}	
 };
