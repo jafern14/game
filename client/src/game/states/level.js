@@ -1,7 +1,7 @@
 var Player = require("../entities/player");
 var Enemy = require("../entities/enemy");
 var Checkpoint = require("../entities/checkpoint");
-var TextConfigurer = require("../util/text_configurer")
+var TextConfigurer = require("../util/text_configurer");
 
 var Level = function () {};
 
@@ -64,7 +64,17 @@ Level.prototype.killGranny = function() {
 		level.addHUD();
 	} 
 	else {
-		game.state.start("Level");
+		if (this.loseText != null) {
+            this.loseText.destroy(); 
+        }
+        this.loseText = game.add.text(230, 250, "You Lose!");
+        TextConfigurer.configureText(this.loseText, "white", 48);
+        this.loseText.fixedToCamera = true;
+
+        game.time.events.add(5000, function() {
+            game.state.start("Level");
+        }, this);
+		
 	}
 }
 
@@ -107,7 +117,6 @@ Level.prototype.update = function() {
 Level.prototype.render = function() {
 	//Show game stats - fps, camera location, sprite location
 	//game.debug.cameraInfo(game.camera, 32, 32);
-	//game.debug.spriteCoords(this.enemy, 32, 500);
 };
 
 Level.prototype.initializeGameCamera = function () {
@@ -158,10 +167,17 @@ Level.prototype.initializePlayer = function() {
 Level.prototype.initializeEnemies = function() {
 	this.enemies = 
 	[
-		//new Enemy(200, 200, 500, 300, 100),
-		//new Enemy(100, 200, 200, 350, 100),
-		//new Enemy(250, 150, 400, 300, 100),
-		new Enemy(1030, 105, 1030, 150, 50),
+		new Enemy(1525, 480, 1525, 550, 100),
+		new Enemy(1525, 430, 1585, 430, 50),
+		new Enemy(1365, 200, 1425, 200, 50),
+		new Enemy(1365, 110, 1425, 110, 50),
+		new Enemy(1185, 40, 1415, 40, 100),
+		new Enemy(1135, 55, 1135, 130, 100),
+		new Enemy(1035, 130, 1155, 130, 100),
+		new Enemy(1235, 350, 1235, 500, 100),
+		new Enemy(1300, 325, 1300, 525, 150),
+		new Enemy(870, 500, 1325, 500, 200),
+		new Enemy(760, 325, 1300, 325, 200),
 		new Enemy(875, 220, 950, 220, 50),
 		new Enemy(865, 210, 865, 530, 150),
 		new Enemy(715, 125, 715, 355, 100),
@@ -181,7 +197,7 @@ Level.prototype.initializeCheckpoints = function() {
 		new Checkpoint(0, 80, 64, 80, true, 1),
 		new Checkpoint(336, 542, 80, 64, false, 2),
 		new Checkpoint(750, 96, 80, 48, false, 3),
-		new Checkpoint(1506, 338, 92, 80, false, 4)		
+		new Checkpoint(1506, 338, 92, 80, false, 4, true)		
 	];
 };
 

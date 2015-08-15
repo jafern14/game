@@ -1,9 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Checkpoint = function (x, y, width, height, activated, order) {
+var Checkpoint = function (x, y, width, height, activated, order, finalCheckpoint) {
     Phaser.Sprite.call(this, game, x, y, null);
 	game.physics.enable(this, Phaser.Physics.ARCADE);
 	this.body.setSize(width, height, 0, 0);
 
+	this.finalCheckpoint = finalCheckpoint;
     this.order = order;
     this.activated = activated;
     //add sprite to game
@@ -15,7 +16,7 @@ module.exports = Checkpoint;
 Checkpoint.prototype = Object.create(Phaser.Sprite.prototype);
 
 Checkpoint.prototype.update = function() {
-    game.debug.body(this, "rbga(0, 0, 255, 1)", false);
+    //game.debug.body(this, "rbga(0, 0, 255, 1)", false);
 }
 },{}],2:[function(require,module,exports){
 var Enemy = function (startX, startY, endX, endY, _velocity) {
@@ -92,6 +93,8 @@ Enemy.prototype.reachedDestination = function () {
 }
 },{}],3:[function(require,module,exports){
 var MAX_VELOCITY = 150;
+var TextConfigurer = require("../util/text_configurer")
+
 
 var Player = function (x, y) {
     Phaser.Sprite.call(this, game, x, y, "dude");
@@ -99,8 +102,8 @@ var Player = function (x, y) {
 
     //set bounding box
     this.body.collideWorldBounds = true;
-    this.body.sourceHeight = 100;
-    this.body.sourceWidth = 100;
+    this.body.sourceHeight = 80;
+    this.body.sourceWidth = 80;
     
     //initialize the "onclick" function
     game.input.onDown.add(this.move, this);
@@ -153,8 +156,36 @@ Player.prototype.checkLocation = function() {
 
     //check for contact with checkpoints
     for (i = 0; i < level.checkpoints.length; i++) {
-        game.physics.arcade.overlap(this, level.checkpoints[i], function() {
+        game.physics.arcade.overlap(this, level.checkpoints[i], function() { d
             if (level.checkpoints[i].activated == false) {
+                if (!level.checkpoints[i].finalCheckpoint) {
+                    if (this.checkpointText != null) {
+                        this.checkpointText.destroy(); 
+                    }
+                    this.checkpointText = game.add.text(230, 10, "Checkpoint Reached!");
+                    TextConfigurer.configureText(this.checkpointText, "white", 24);
+                    this.checkpointText.fixedToCamera = true;
+
+                    game.time.events.add(2000, function() {
+                        game.add.tween(this.checkpointText).to({y: 0}, 1500, Phaser.Easing.Linear.None, true);
+                        game.add.tween(this.checkpointText).to({alpha: 0}, 1500, Phaser.Easing.Linear.None, true);
+                    }, this);
+                }
+                else {
+                    if (this.winText != null) {
+                        this.winText.destroy(); 
+                    }
+                    this.winText = game.add.text(230, 250, "You Win!");
+                    TextConfigurer.configureText(this.winText, "white", 48);
+                    this.winText.fixedToCamera = true;
+
+                    game.time.events.add(5000, function() {
+                        game.state.start("Level");
+                    }, this);
+
+                }
+                
+
                 level.checkpoints[i].activated = true;
             }   
         });
@@ -183,7 +214,7 @@ Player.prototype.checkLocation = function() {
         }
     }
 }
-},{}],4:[function(require,module,exports){
+},{"../util/text_configurer":7}],4:[function(require,module,exports){
 var Boot = function() {};
 
 module.exports = Boot;
@@ -205,7 +236,7 @@ Boot.prototype = {
 var Player = require("../entities/player");
 var Enemy = require("../entities/enemy");
 var Checkpoint = require("../entities/checkpoint");
-var TextConfigurer = require("../util/text_configurer")
+var TextConfigurer = require("../util/text_configurer");
 
 var Level = function () {};
 
@@ -268,7 +299,17 @@ Level.prototype.killGranny = function() {
 		level.addHUD();
 	} 
 	else {
-		game.state.start("Level");
+		if (this.loseText != null) {
+            this.loseText.destroy(); 
+        }
+        this.loseText = game.add.text(230, 250, "You Lose!");
+        TextConfigurer.configureText(this.loseText, "white", 48);
+        this.loseText.fixedToCamera = true;
+
+        game.time.events.add(5000, function() {
+            game.state.start("Level");
+        }, this);
+		
 	}
 }
 
@@ -311,7 +352,6 @@ Level.prototype.update = function() {
 Level.prototype.render = function() {
 	//Show game stats - fps, camera location, sprite location
 	//game.debug.cameraInfo(game.camera, 32, 32);
-	//game.debug.spriteCoords(this.enemy, 32, 500);
 };
 
 Level.prototype.initializeGameCamera = function () {
@@ -362,10 +402,17 @@ Level.prototype.initializePlayer = function() {
 Level.prototype.initializeEnemies = function() {
 	this.enemies = 
 	[
-		//new Enemy(200, 200, 500, 300, 100),
-		//new Enemy(100, 200, 200, 350, 100),
-		//new Enemy(250, 150, 400, 300, 100),
-		new Enemy(1030, 105, 1030, 150, 50),
+		new Enemy(1525, 480, 1525, 550, 100),
+		new Enemy(1525, 430, 1585, 430, 50),
+		new Enemy(1365, 200, 1425, 200, 50),
+		new Enemy(1365, 110, 1425, 110, 50),
+		new Enemy(1185, 40, 1415, 40, 100),
+		new Enemy(1135, 55, 1135, 130, 100),
+		new Enemy(1035, 130, 1155, 130, 100),
+		new Enemy(1235, 350, 1235, 500, 100),
+		new Enemy(1300, 325, 1300, 525, 150),
+		new Enemy(870, 500, 1325, 500, 200),
+		new Enemy(760, 325, 1300, 325, 200),
 		new Enemy(875, 220, 950, 220, 50),
 		new Enemy(865, 210, 865, 530, 150),
 		new Enemy(715, 125, 715, 355, 100),
@@ -385,7 +432,7 @@ Level.prototype.initializeCheckpoints = function() {
 		new Checkpoint(0, 80, 64, 80, true, 1),
 		new Checkpoint(336, 542, 80, 64, false, 2),
 		new Checkpoint(750, 96, 80, 48, false, 3),
-		new Checkpoint(1506, 338, 92, 80, false, 4)		
+		new Checkpoint(1506, 338, 92, 80, false, 4, true)		
 	];
 };
 
@@ -436,6 +483,7 @@ Preloader.prototype = {
 		this.load.tilemap("map", "assets/map/Levels/Lava-2.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/volcano-tileset.png");
 		this.load.spritesheet("dude", "assets/textures/enemy.png");
+		this.load.spritesheet("play again", "assets/textures/play_again.png");
 		this.load.spritesheet("enemy", "assets/textures/zombie.png", 157, 102)
 
 		cursors = game.input.keyboard.createCursorKeys();
