@@ -93,7 +93,7 @@ Level.prototype.toggleCamera = function() {
 		} else {
 			//follow player
 			game.camera.following = true;
-			game.camera.follow(this.player);
+			game.camera.follow(level.player);
 
 
 			level.cameraText.destroy();

@@ -156,7 +156,7 @@ Player.prototype.checkLocation = function() {
 
     //check for contact with checkpoints
     for (i = 0; i < level.checkpoints.length; i++) {
-        game.physics.arcade.overlap(this, level.checkpoints[i], function() { d
+        game.physics.arcade.overlap(this, level.checkpoints[i], function() { 
             if (level.checkpoints[i].activated == false) {
                 if (!level.checkpoints[i].finalCheckpoint) {
                     if (this.checkpointText != null) {
@@ -328,7 +328,7 @@ Level.prototype.toggleCamera = function() {
 		} else {
 			//follow player
 			game.camera.following = true;
-			game.camera.follow(this.player);
+			game.camera.follow(level.player);
 
 
 			level.cameraText.destroy();
