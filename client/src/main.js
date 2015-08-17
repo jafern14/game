@@ -1,11 +1,14 @@
-window.game = new Phaser.Game(608, 608, Phaser.AUTO, '');
+window.game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create });
 
-startGame();
+function preload () {
 
-function startGame() {
-	//initialize all the game states.
-	game.state.add("Boot", require("./game/states/boot"));
-	game.state.add("Preloader", require("./game/states/preloader"));
-    game.state.add("Level", require("./game/states/level"));
-	game.state.start("Boot");
-};3
+    game.load.image('logo', 'assets/textures/phaserimg.png');
+
+}
+
+function create () {
+
+    var logo = game.add.sprite(game.world.centerX, game.world.centerY, 'logo');
+    logo.anchor.setTo(0.5, 0.5);
+
+}
