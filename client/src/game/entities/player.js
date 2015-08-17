@@ -18,8 +18,8 @@ var Player = function (x, y) {
     this.scale.set(.3,.3);
 
     //set the players position to the center of the sprite
-    this.anchor.x = .5;
-    this.anchor.y = .5;
+    this.anchor.x = .45;
+    this.anchor.y = .55;
     //turn character the other direction
     this.rotation = Math.PI ;
 
@@ -36,7 +36,7 @@ Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 Player.prototype.update = function() {
     //display bounding box
-    //game.debug.body(this, "rgba(0,255,0,100)", false);
+    game.debug.body(this, "rgba(0,255,0,100)", false);
 
     //if player is moving this will tell it when to stop
     this.checkLocation();    
@@ -59,48 +59,6 @@ Player.prototype.checkLocation = function() {
 
     //check contact with lava - add "die" callback if contact is made
     game.physics.arcade.overlap(this, level.deathLayer, level.killGranny);
-
-    //check for contact with checkpoints
-    for (i = 0; i < level.checkpoints.length; i++) {
-        game.physics.arcade.overlap(this, level.checkpoints[i], function() { 
-            if (level.checkpoints[i].activated == false) {
-                if (!level.checkpoints[i].finalCheckpoint) {
-                    if (this.checkpointText != null) {
-                        this.checkpointText.destroy(); 
-                    }
-                    this.checkpointText = game.add.text(230, 10, "Checkpoint Reached!");
-                    TextConfigurer.configureText(this.checkpointText, "white", 24);
-                    this.checkpointText.fixedToCamera = true;
-
-                    game.time.events.add(2000, function() {
-                        game.add.tween(this.checkpointText).to({y: 0}, 1500, Phaser.Easing.Linear.None, true);
-                        game.add.tween(this.checkpointText).to({alpha: 0}, 1500, Phaser.Easing.Linear.None, true);
-                    }, this);
-                }
-                else {
-                    if (this.winText != null) {
-                        this.winText.destroy(); 
-                    }
-                    this.winText = game.add.text(230, 250, "You Win!");
-                    TextConfigurer.configureText(this.winText, "white", 48);
-                    this.winText.fixedToCamera = true;
-
-                    game.time.events.add(5000, function() {
-                        game.state.start("Level");
-                    }, this);
-
-                }
-                
-
-                level.checkpoints[i].activated = true;
-            }   
-        });
-    }  
-
-    //check for contact with enemies
-    for (i = 0; i < level.enemies.length; i++) {
-        game.physics.arcade.overlap(this, level.enemies[i], level.killGranny)    
-    }
 
     //if there is no contact, stop the character from moving after they've reached their destination
     //made it approximate destination because its unlikely it will end on that exact location

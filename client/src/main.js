@@ -8,4 +8,4 @@ function startGame() {
 	game.state.add("Preloader", require("./game/states/preloader"));
     game.state.add("Level", require("./game/states/level"));
 	game.state.start("Boot");
-};3
+};
