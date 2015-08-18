@@ -92,8 +92,8 @@ var Player = function (x, y) {
     this.scale.set(.3,.3);
 
     //set the players position to the center of the sprite
-    this.anchor.x = .5;
-    this.anchor.y = .5;
+    this.anchor.x = .45;
+    this.anchor.y = .55;
     //turn character the other direction
     this.rotation = Math.PI ;
 
@@ -353,7 +353,7 @@ module.exports = Preloader;
 Preloader.prototype = {
 	preload: function() {
 		this.displayLoader();
-		this.load.tilemap("map", "assets/map/Levels/Lava-2.json", null, Phaser.Tilemap.TILED_JSON);
+		this.load.tilemap("map", "assets/map/Levels/Level-1.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/volcano-tileset.png");
 		this.load.spritesheet("dude", "assets/textures/enemy.png");
 		this.load.spritesheet("enemy", "assets/textures/zombie.png", 157, 102)
@@ -383,11 +383,9 @@ exports.configureText = function(text, color, size) {
 	text.fontSize = size;
 }
 },{}],7:[function(require,module,exports){
-window.game = new Phaser.Game(608, 608, Phaser.AUTO, '');
+window.game = new Phaser.Game(608, 608, Phaser.AUTO, '', { create: create });
 
-startGame();
-
-function startGame() {
+function create() {
 	//initialize all the game states.
 	game.state.add("Boot", require("./game/states/boot"));
 	game.state.add("Preloader", require("./game/states/preloader"));
