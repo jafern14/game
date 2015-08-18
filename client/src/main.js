@@ -1,7 +1,5 @@
 window.game = new Phaser.Game(1600, 608, Phaser.AUTO, '', { preload: preload });
 
-preload();
-
 function preload() {
 	//initialize all the game states.
 	game.state.add("Boot", require("./game/states/boot"));
