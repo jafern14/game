@@ -18,8 +18,8 @@ var Player = function (x, y) {
     this.scale.set(.3,.3);
 
     //set the players position to the center of the sprite
-    this.anchor.x = .5;
-    this.anchor.y = .5;
+    this.anchor.x = .45;
+    this.anchor.y = .55;
     //turn character the other direction
     this.rotation = Math.PI ;
 
