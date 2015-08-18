@@ -7,7 +7,6 @@ var Enemy = function (startX, startY, endX, endY, _velocity) {
 
     this.body.sourceHeight = 100;
     this.body.sourceWidth = 100;
-
     
     this.velocity = _velocity;
 
