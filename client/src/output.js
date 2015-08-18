@@ -154,9 +154,10 @@ module.exports = Preloader;
 Preloader.prototype = {
 	preload: function() {
 		this.displayLoader();
-		this.load.tilemap("map", "assets/map/Levels/Lava-2.json", null, Phaser.Tilemap.TILED_JSON);
+		this.load.tilemap("map", "assets/map/Levels/Level-1.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/volcano-tileset.png");
 		this.load.spritesheet("dude", "assets/textures/enemy.png");
+		this.load.spritesheet("enemy", "assets/textures/zombie.png", 157, 102)
 
 		cursors = game.input.keyboard.createCursorKeys();
 		mouse = game.input.mouse;
@@ -183,11 +184,9 @@ exports.configureText = function(text, color, size) {
 	text.fontSize = size;
 }
 },{}],6:[function(require,module,exports){
-window.game = new Phaser.Game(608, 608, Phaser.AUTO, '');
+window.game = new Phaser.Game(608, 608, Phaser.AUTO, '', { create: create });
 
-startGame();
-
-function startGame() {
+function create() {
 	//initialize all the game states.
 	game.state.add("Boot", require("./game/states/boot"));
 	game.state.add("Preloader", require("./game/states/preloader"));
