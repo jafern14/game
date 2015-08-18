@@ -1,5 +1,4 @@
 var Player = require("../entities/player");
-var TextConfigurer = require("../util/text_configurer");
 
 var Level = function () {};
 
