@@ -268,8 +268,6 @@ Level.prototype.create = function() {
 	game.input.keyboard.player = this.player;
 
 	this.addHUD();
-	
-	
 };
 
 Level.prototype.addHUD = function () {
@@ -287,30 +285,6 @@ Level.prototype.addHUD = function () {
 	this.cameraText = game.add.text(10, 48, "Camera: Locked")
 	TextConfigurer.configureText(this.cameraText, "white", 16);
 	this.cameraText .fixedToCamera = true;
-}
-
-Level.prototype.killGranny = function() {	
-	if (level.lives > 0) {
-		level.lives --;
-		level.player.kill();
-		level.player = level.initializePlayer();
-		level.initializeGameCamera();
-		level.livesText.destroy();
-		level.addHUD();
-	} 
-	else {
-		if (this.loseText != null) {
-            this.loseText.destroy(); 
-        }
-        this.loseText = game.add.text(230, 250, "You Lose!");
-        TextConfigurer.configureText(this.loseText, "white", 48);
-        this.loseText.fixedToCamera = true;
-
-        game.time.events.add(5000, function() {
-            game.state.start("Level");
-        }, this);
-		
-	}
 }
 
 Level.prototype.toggleCamera = function() {
