@@ -1,6 +1,5 @@
 var Player = require("../entities/player");
 var Enemy = require("../entities/enemy");
-var Checkpoint = require("../entities/checkpoint");
 var TextConfigurer = require("../util/text_configurer");
 
 var Level = function () {};
@@ -12,7 +11,6 @@ Level.prototype.create = function() {
 	this.lives = 10;
 	level = this;
 	this.initializeMap();
-	this.initializeCheckpoints();
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 	this.initializeEnemies();
 	this.player = this.initializePlayer();
@@ -31,52 +29,7 @@ Level.prototype.create = function() {
 	game.input.keyboard.onDownCallback = this.toggleCamera;
 	// add player to keyboard context
 	game.input.keyboard.player = this.player;
-
-	this.addHUD();
-	
-	
 };
-
-Level.prototype.addHUD = function () {
-	if (this.livesText != null) {
-		this.livesText.destroy(); 
-	}
-
-	this.livesText = game.add.text(10, 10, "Lives: " + this.lives);
-	TextConfigurer.configureText(this.livesText, "white", 32);
-	this.livesText.fixedToCamera = true;
-
-	if (this.cameraText != null) {
-		this.cameraText.destroy(); 
-	}
-	this.cameraText = game.add.text(10, 48, "Camera: Locked")
-	TextConfigurer.configureText(this.cameraText, "white", 16);
-	this.cameraText .fixedToCamera = true;
-}
-
-Level.prototype.killGranny = function() {	
-	if (level.lives > 0) {
-		level.lives --;
-		level.player.kill();
-		level.player = level.initializePlayer();
-		level.initializeGameCamera();
-		level.livesText.destroy();
-		level.addHUD();
-	} 
-	else {
-		if (this.loseText != null) {
-            this.loseText.destroy(); 
-        }
-        this.loseText = game.add.text(230, 250, "You Lose!");
-        TextConfigurer.configureText(this.loseText, "white", 48);
-        this.loseText.fixedToCamera = true;
-
-        game.time.events.add(5000, function() {
-            game.state.start("Level");
-        }, this);
-		
-	}
-}
 
 Level.prototype.toggleCamera = function() {
 	//if spacebar was hit, toggle camera
@@ -107,11 +60,6 @@ Level.prototype.toggleCamera = function() {
 Level.prototype.update = function() {
 	//game camera updates
 	this.moveGameCamera();
-	
-	//disply checkpoints squares
-	for (i = 0; i < this.checkpoints.length; i++) {
-		this.checkpoints[i].update();	
-	}
 };
 
 Level.prototype.render = function() {
@@ -153,15 +101,7 @@ Level.prototype.initializeMap = function() {
 
 Level.prototype.initializePlayer = function() {
 	// create a new player at that spawn location.
-	lastCheckpoint = new Checkpoint(0,0,0,0,false,0);
-
-	for (i = 0; i < this.checkpoints.length; i++) {
-		if (this.checkpoints[i].activated && this.checkpoints[i].order > lastCheckpoint.order) {
-			lastCheckpoint = this.checkpoints[i];	
-		}	
-	}
-
-	return new Player(lastCheckpoint.body.center.x, lastCheckpoint.body.center.y);
+	return new Player(10, 100);
 };
 
 Level.prototype.initializeEnemies = function() {
@@ -188,16 +128,6 @@ Level.prototype.initializeEnemies = function() {
 		new Enemy(275, 175, 450, 175, 125),
 		new Enemy(135, 275, 215, 275, 75),
 		new Enemy(85, 200, 85, 450, 100)
-	];
-};
-
-Level.prototype.initializeCheckpoints = function() {
-	this.checkpoints = 
-	[
-		new Checkpoint(0, 80, 64, 80, true, 1),
-		new Checkpoint(336, 542, 80, 64, false, 2),
-		new Checkpoint(750, 96, 80, 48, false, 3),
-		new Checkpoint(1506, 338, 92, 80, false, 4, true)		
 	];
 };
 
