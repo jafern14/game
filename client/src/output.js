@@ -480,10 +480,9 @@ module.exports = Preloader;
 Preloader.prototype = {
 	preload: function() {
 		this.displayLoader();
-		this.load.tilemap("map", "assets/map/Levels/Lava-2.json", null, Phaser.Tilemap.TILED_JSON);
+		this.load.tilemap("map", "assets/map/Levels/Level-1.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/volcano-tileset.png");
 		this.load.spritesheet("dude", "assets/textures/enemy.png");
-		this.load.spritesheet("play again", "assets/textures/play_again.png");
 		this.load.spritesheet("enemy", "assets/textures/zombie.png", 157, 102)
 
 		cursors = game.input.keyboard.createCursorKeys();
