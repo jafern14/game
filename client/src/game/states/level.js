@@ -38,21 +38,10 @@ Level.prototype.toggleCamera = function() {
 			//unfollow
 			game.camera.following = false;
 			game.camera.unfollow();
-
-			level.cameraText.destroy();
-			level.cameraText = game.add.text(10, 48, "Camera: Free")
-			TextConfigurer.configureText(level.cameraText, "white", 16);
-			level.cameraText.fixedToCamera = true;
 		} else {
 			//follow player
 			game.camera.following = true;
 			game.camera.follow(level.player);
-
-
-			level.cameraText.destroy();
-			level.cameraText = game.add.text(10, 48, "Camera: Locked")
-			TextConfigurer.configureText(level.cameraText, "white", 16);
-			level.cameraText.fixedToCamera = true;
 		}	
 	}	
 };
