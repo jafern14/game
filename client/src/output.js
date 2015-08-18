@@ -511,15 +511,13 @@ exports.configureText = function(text, color, size) {
 	text.fontSize = size;
 }
 },{}],8:[function(require,module,exports){
-window.game = new Phaser.Game(608, 608, Phaser.AUTO, '');
+window.game = new Phaser.Game(608, 608, Phaser.AUTO, '', { create: create });
 
-startGame();
-
-function startGame() {
+function create() {
 	//initialize all the game states.
 	game.state.add("Boot", require("./game/states/boot"));
 	game.state.add("Preloader", require("./game/states/preloader"));
     game.state.add("Level", require("./game/states/level"));
 	game.state.start("Boot");
-};3
+};
 },{"./game/states/boot":4,"./game/states/level":5,"./game/states/preloader":6}]},{},[8]);
