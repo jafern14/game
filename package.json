@@ -1,80 +1,34 @@
 {
-  "name": "http-server",
-  "version": "0.8.0",
-  "description": "A simple zero-configuration command-line http server",
-  "main": "./lib/http-server",
+  "name": "game",
+  "version": "1.0.0",
+  "description": "Not really sure what my plans are with this game, some of my early plans are to use Phaser to create a multiplayer online game.\r Including Socket.io and node backend.",
+  "main": "index.js",
+  "dependencies": {
+    "colors": "^1.0.3",
+    "corser": "^2.0.0",
+    "ecstatic": "^0.7.6",
+    "http-server": "^0.8.0",
+    "http-proxy": "^1.11.1",
+    "opener": "^1.4.1",
+    "optimist": "^0.6.1",
+    "request": "^2.49.0",
+    "stylezero": "^2.2.0",
+    "union": "^0.4.4",
+    "vows": "^0.7.0",
+    "portfinder": "^0.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
-    "url": "git://github.com/indexzero/http-server.git"
+    "url": "https://github.com/adw45/game.git"
   },
-  "keywords": [
-    "cli",
-    "command"
-  ],
-  "scripts": {
-    "start": "node ./bin/http-server",
-    "pretest": "stylezero bin/ lib/ test",
-    "test": "vows --spec --isolate"
-  },
-  "contributors": [
-    "Charlie Robbins <charlie.robbins@gmail.com>",
-    "Marak Squires <marak.squires@gmail.com>",
-    "Charlie McConnell <charlie@charlieistheman.com>",
-    "Joshua Holbrook <josh.holbrook@gmail.com>",
-    "Maciej Małecki <maciej.malecki@notimplemented.org>",
-    "Matthew Bergman <mzbphoto@gmail.com>",
-    "brad dunbar <dunbarb2@gmail.com>",
-    "Dominic Tarr",
-    "Travis Person <travis.person@gmail.com>",
-    "Jinkwon Lee <master@bdyne.net>"
-  ],
-  "dependencies": {
-    "colors": "1.0.3",
-    "optimist": "0.6.x",
-    "union": "~0.4.3",
-    "ecstatic": "~0.7.0",
-    "http-proxy": "^1.8.1",
-    "portfinder": "0.4.x",
-    "opener": "~1.4.0",
-    "corser": "~2.0.0"
-  },
-  "devDependencies": {
-    "vows": "0.7.x",
-    "request": "2.49.x",
-    "stylezero": "2.2.0"
-  },
+  "author": "",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nodeapps/http-server/issues"
+    "url": "https://github.com/adw45/game/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/nodeapps/http-server/raw/master/LICENSE"
-    }
-  ],
-  "preferGlobal": "true",
-  "bin": {
-    "http-server": "./bin/http-server",
-    "hs": "./bin/http-server"
-  },
-  "homepage": "https://github.com/indexzero/http-server",
-  "_shasum": "d4b671781ec6bf9fa6a311cd1df683b0b37b1491",
-  "_from": "http-server@",
-  "_npmVersion": "2.2.0",
-  "_nodeVersion": "0.10.33",
-  "_npmUser": {
-    "name": "indexzero",
-    "email": "charlie.robbins@gmail.com"
-  },
-  "maintainers": [
-    "indexzero <charlie.robbins@gmail.com>"
-  ],
-  "dist": {
-    "shasum": "d4b671781ec6bf9fa6a311cd1df683b0b37b1491",
-    "tarball": "http://registry.npmjs.org/http-server/-/http-server-0.8.0.tgz"
-  },
-  "directories": {},
-  "_resolved": "https://registry.npmjs.org/http-server/-/http-server-0.8.0.tgz",
-  "author": "0.8.0",
-  "license": "ISC"
+  "homepage": "https://github.com/adw45/game"
 }
