@@ -36,7 +36,7 @@ Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 Player.prototype.update = function() {
     //display bounding box
-    //game.debug.body(this, "rgba(0,255,0,100)", false);
+    game.debug.body(this, "rgba(0,255,0,100)", false);
 
     //if player is moving this will tell it when to stop
     this.checkLocation();    

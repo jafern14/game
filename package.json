@@ -1,0 +1,34 @@
+{
+  "name": "game",
+  "version": "1.0.0",
+  "description": "Not really sure what my plans are with this game, some of my early plans are to use Phaser to create a multiplayer online game.\r Including Socket.io and node backend.",
+  "main": "index.js",
+  "dependencies": {
+    "colors": "^1.0.3",
+    "corser": "^2.0.0",
+    "ecstatic": "^0.7.6",
+    "http-server": "^0.8.0",
+    "http-proxy": "^1.11.1",
+    "opener": "^1.4.1",
+    "optimist": "^0.6.1",
+    "request": "^2.49.0",
+    "stylezero": "^2.2.0",
+    "union": "^0.4.4",
+    "vows": "^0.7.0",
+    "portfinder": "^0.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adw45/game.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adw45/game/issues"
+  },
+  "homepage": "https://github.com/adw45/game"
+}
