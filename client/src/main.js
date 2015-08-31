@@ -1,6 +1,7 @@
 window.game = new Phaser.Game(608, 608, Phaser.AUTO, '', { create: create });
 
 function create() {
+	socket = io("http://localhost:8080");
 	//initialize all the game states.
 	game.state.add("Boot", require("./game/states/boot"));
 	game.state.add("Preloader", require("./game/states/preloader"));
