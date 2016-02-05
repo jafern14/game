@@ -35,7 +35,11 @@ RUN cd /app && npm install
 
 ADD . /app
 
-EXPOSE 8080
+RUN /app/node_modules/browserify/bin/cmd.js /app/client/src/main.js -o /app/client/dist/output.js
 
-CMD /app/node_modules/http-server/bin/http-server /app/client
+EXPOSE 8000
 
+CMD cd /app && npm start
+
+# docker build -t aweb/game .
+# docker run -d -p 8000:8000 aweb/game

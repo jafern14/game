@@ -32,9 +32,7 @@ Level.prototype.create = function() {
 	// add player to keyboard context
 	game.input.keyboard.player = this.player;
 
-	this.addHUD();
-	
-	
+	this.addHUD();	
 };
 
 Level.prototype.addHUD = function () {
@@ -74,7 +72,6 @@ Level.prototype.killGranny = function() {
         game.time.events.add(5000, function() {
             game.state.start("Level");
         }, this);
-		
 	}
 }
 
@@ -94,7 +91,6 @@ Level.prototype.toggleCamera = function() {
 			//follow player
 			game.camera.following = true;
 			game.camera.follow(level.player);
-
 
 			level.cameraText.destroy();
 			level.cameraText = game.add.text(10, 48, "Camera: Locked")

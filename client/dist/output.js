@@ -267,9 +267,7 @@ Level.prototype.create = function() {
 	// add player to keyboard context
 	game.input.keyboard.player = this.player;
 
-	this.addHUD();
-	
-	
+	this.addHUD();	
 };
 
 Level.prototype.addHUD = function () {
@@ -309,7 +307,6 @@ Level.prototype.killGranny = function() {
         game.time.events.add(5000, function() {
             game.state.start("Level");
         }, this);
-		
 	}
 }
 
@@ -329,7 +326,6 @@ Level.prototype.toggleCamera = function() {
 			//follow player
 			game.camera.following = true;
 			game.camera.follow(level.player);
-
 
 			level.cameraText.destroy();
 			level.cameraText = game.add.text(10, 48, "Camera: Locked")
@@ -513,11 +509,43 @@ exports.configureText = function(text, color, size) {
 window.game = new Phaser.Game(608, 608, Phaser.AUTO, '', { create: create });
 
 function create() {
-	socket = io();
-	//initialize all the game states.
-	game.state.add("Boot", require("./game/states/boot"));
-	game.state.add("Preloader", require("./game/states/preloader"));
-    game.state.add("Level", require("./game/states/level"));
-	game.state.start("Boot");
+	easyrtc.enableDebug(true);
+	easyrtc.connect("game.server",
+	 	function(easyrtcid, roomOwner) {
+	    	//connected
+	  	},
+	  	function(errorText) {
+			console.log("failed to connect ", erFrText);
+		}
+	);
+	easyrtc.enableDataChannels(true);
+
+	easyrtc.joinRoom(
+		"lobby",
+		null,
+		function() {
+		 	easyrtc.sendServerMessage("hello",  {message:'hello'},
+	      	function(ackmessage){
+		        console.log(ackmessage);
+		    	}
+		   	);
+ 		},
+		function() {
+			console.log('failed to join')	
+		}	
+	);
+
+
+    //initialize all the game states.
+    game.state.add("Boot", require("./game/states/boot"));
+    game.state.add("Preloader", require("./game/states/preloader"));
+	game.state.add("Level", require("./game/states/level"));
+    game.state.start("Boot");
 };
+
+
+
+
+
+
 },{"./game/states/boot":4,"./game/states/level":5,"./game/states/preloader":6}]},{},[8]);

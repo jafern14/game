@@ -1,1 +1,1 @@
-web: http-server client
+web: node server.js
