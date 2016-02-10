@@ -2,7 +2,10 @@ var MAX_VELOCITY = 150;
 var TextConfigurer = require("../util/text_configurer")
 
 
+
 var Player = function (x, y) {
+
+    this.id = game.grannyCounter++;
     Phaser.Sprite.call(this, game, x, y, "dude");
     game.physics.arcade.enable(this);
 
@@ -57,8 +60,17 @@ Player.prototype.checkLocation = function() {
     //check contact with rock walls
     game.physics.arcade.overlap(this, level.blockLayer);
 
+    granny = this;
     //check contact with lava - add "die" callback if contact is made
-    game.physics.arcade.overlap(this, level.deathLayer, level.killGranny);
+    game.physics.arcade.overlap(this, level.deathLayer,
+        function() {
+            level.killGranny(granny)
+        });
+
+    //check for contact with enemies
+    for (i = 0; i < level.enemies.length; i++) {
+        //game.physics.arcade.overlap(this, level.enemies[i], level.killGranny)    
+    }
 
     //check for contact with checkpoints
     for (i = 0; i < level.checkpoints.length; i++) {
@@ -93,11 +105,6 @@ Player.prototype.checkLocation = function() {
             }   
         });
     }  
-
-    //check for contact with enemies
-    for (i = 0; i < level.enemies.length; i++) {
-        game.physics.arcade.overlap(this, level.enemies[i], level.killGranny)    
-    }
 
     //if there is no contact, stop the character from moving after they've reached their destination
     //made it approximate destination because its unlikely it will end on that exact location

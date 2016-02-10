@@ -23,13 +23,14 @@
   "devDependencies": {},
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "watchify client/src/main.js -o client/dist/output.js -dv" 
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/adw45/game.git"
   },
-  "author": "",
+  "author": "Andrew Weber",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/adw45/game/issues"
