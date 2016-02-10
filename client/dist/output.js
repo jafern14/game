@@ -1,4 +1,45 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+module.exports={ 
+	"zombies" : [
+		{
+			"position" : [
+				{"x" : 250, "y" : 200},
+				{"x" : 250, "y" : 250}
+			],
+			"speed" : 100 
+		},
+		{
+			"position" : [
+				{"x" : 300, "y" : 300},
+				{"x" : 350, "y" : 300},
+				{"x" : 325, "y" : 100}
+			],
+			"speed" : 150 
+		}
+	],
+	"checkpoints" : [
+		{
+			"spawnpoints" : [
+				{"x": 80, "y": 75},
+				{"x": 80, "y": 155},
+				{"x": 80, "y": 235},
+				{"x": 80, "y": 315}
+			], 
+			"dimensions" : {"x0" : 0, "width" : 10, "y0" : 0, "height" : 10}
+		},
+		{ 
+			"spawnpoints" : [
+				{"x": 0, "y": 0},
+				{"x": 0, "y": 1},
+				{"x": 0, "y": 2},
+				{"x": 0, "y": 3}
+			],
+			"dimensions" : {"x0" : 10, "width" : 10, "y0" : 10, "height" : 10}
+		}
+	]
+}
+
+},{}],2:[function(require,module,exports){
 var Checkpoint = function (x, y, width, height, activated, order, finalCheckpoint) {
     Phaser.Sprite.call(this, game, x, y, null);
 	game.physics.enable(this, Phaser.Physics.ARCADE);
@@ -18,23 +59,22 @@ Checkpoint.prototype = Object.create(Phaser.Sprite.prototype);
 Checkpoint.prototype.update = function() {
     //game.debug.body(this, "rbga(0, 0, 255, 1)", false);
 }
-},{}],2:[function(require,module,exports){
-var Enemy = function (startX, startY, endX, endY, _velocity) {
-    Phaser.Sprite.call(this, game, startX, startY, "enemy");
+},{}],3:[function(require,module,exports){
+var Enemy = function (_positions, _velocity) {
+    
+    this.positions = _positions;
+    this.counter = 0;
+
+    Phaser.Sprite.call(this, game, this.positions[0].x, this.positions[0].y, "enemy");
     game.physics.arcade.enable(this);
 
     this.body.collideWorldBounds = true;
-
     this.body.sourceHeight = 100;
     this.body.sourceWidth = 100;
 
+    this.max_velocity = _velocity;
+    this.destination = null;    
     
-    this.velocity = _velocity;
-
-    this.startPoint = new Phaser.Point(startX, startY);
-    this.endPoint = new Phaser.Point(endX, endY); 
-    this.moveToEnd = false;
-
     this.scale.set(.3,.3);
     this.anchor.x = .5;
     this.anchor.y = .5;
@@ -59,39 +99,56 @@ Enemy.prototype.update = function() {
 }
 
 Enemy.prototype.move = function () {
-    if (this.reachedDestination()) { 
-        destination = null;
-
-        if (this.moveToEnd) {
-            this.moveToEnd = false;
-            destination = this.startPoint;
-        } 
-        else {
-            this.moveToEnd = true;
-            destination = this.endPoint;
-        }
+    if (this.destination == null) {
+        //console.log(this.positions[this.counter%this.positions.size].x);
+        this.destination = new Phaser.Point(this.positions[this.counter%this.positions.length].x, this.positions[this.counter%this.positions.length].y);
+    
         //rotate sprite to face the direction it will be moving
-        this.rotation = game.physics.arcade.angleToXY(this.body, destination.x, destination.y);
+        this.rotation = game.physics.arcade.angleToXY(this.body, this.destination.x, this.destination.y);
+
         //move character to the point (player doesnt stop once it hits that point with this method - see checkLocation()) 
-        game.physics.arcade.moveToXY(this, destination.x, destination.y, this.velocity);
+        game.physics.arcade.moveToXY(this, this.positions[this.counter%this.positions.length].x, this.positions[this.counter%this.positions.length].y, this.max_velocity);
 
+        this.counter ++;
+    } 
+    this.checkLocation();
+}
+
+Enemy.prototype.checkLocation = function() {
+    //if there is no contact, stop the character from moving after they've reached their destination
+    //made it approximate destination because its unlikely it will end on that exact location
+    if (this.destination != null) {
+        //once it gets close enough to the x destination lower x velocity
+        if (Math.abs(this.position.x - this.destination.x) < this.max_velocity/100) {
+            this.body.velocity.x = -(this.position.x - this.destination.x);    
+        }
+        //once it gets close enough to the y destination lower y velocity
+        if (Math.abs(this.position.y - this.destination.y) < this.max_velocity/100) {
+            this.body.velocity.y = -(this.position.y - this.destination.y);
+        }
+        //stop movement completely - destination has been reached.
+        if (Math.abs(this.position.x - this.destination.x) < 5 && Math.abs(this.position.y - this.destination.y) < 5) {
+            this.destination = null;
+        }
     }
 }
 
-Enemy.prototype.reachedDestination = function () {
-    if (this.moveToEnd) {
-        if (this.position.x >= this.endPoint.x && this.position.y >= this.endPoint.y) {
-            return true;   
-        }
-    }
-    else {
-        if (this.position.x <= this.startPoint.x && this.position.y <= this.startPoint.y) {
-            return true;   
-        }
-    }
-    return false;
-}
-},{}],3:[function(require,module,exports){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+},{}],4:[function(require,module,exports){
 var MAX_VELOCITY = 150;
 var TextConfigurer = require("../util/text_configurer")
 
@@ -182,10 +239,7 @@ Player.prototype.checkLocation = function() {
                     game.time.events.add(5000, function() {
                         game.state.start("Level");
                     }, this);
-
                 }
-                
-
                 level.checkpoints[i].activated = true;
             }   
         });
@@ -201,8 +255,7 @@ Player.prototype.checkLocation = function() {
     if (this.destination != null) {
         //once it gets close enough to the x destination lower x velocity
         if (Math.abs(this.position.x - this.destination.x) < MAX_VELOCITY/100) {
-            this.body.velocity.x = -(this.position.x - this.destination.x);
-            
+            this.body.velocity.x = -(this.position.x - this.destination.x);    
         }
         //once it gets close enough to the y destination lower y velocity
         if (Math.abs(this.position.y - this.destination.y) < MAX_VELOCITY/100) {
@@ -210,11 +263,11 @@ Player.prototype.checkLocation = function() {
         }
         //stop movement completely - destination has been reached.
         if (this.position.x == this.destination.x && this.position.y == this.destination.y) {
-            this.destination == null;
+            this.destination = null;
         }
     }
 }
-},{"../util/text_configurer":7}],4:[function(require,module,exports){
+},{"../util/text_configurer":8}],5:[function(require,module,exports){
 var Boot = function() {};
 
 module.exports = Boot;
@@ -232,7 +285,7 @@ Boot.prototype = {
 		game.state.start("Preloader");
 	}
 }
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var Player = require("../entities/player");
 var Enemy = require("../entities/enemy");
 var Checkpoint = require("../entities/checkpoint");
@@ -244,13 +297,17 @@ module.exports = Level;
 
 Level.prototype.create = function() { 
 	// initialize things
-	this.lives = 10;
 	level = this;
+	this.lives = 10;
+	this.enemies = [];
+	this.players = [];
+	game.physics.startSystem(Phaser.Physics.ARCADE);
+	
 	this.initializeMap();
 	this.initializeCheckpoints();
-	game.physics.startSystem(Phaser.Physics.ARCADE);
 	this.initializeEnemies();
-	this.player = this.initializePlayer();
+	this.initializePlayer();
+	
 	this.initializeGameCamera();
 
 	// setup keyboard input
@@ -265,7 +322,7 @@ Level.prototype.create = function() {
 	//on keyboard input toggle camera
 	game.input.keyboard.onDownCallback = this.toggleCamera;
 	// add player to keyboard context
-	game.input.keyboard.player = this.player;
+	game.input.keyboard.player = this.players[0];
 
 	this.addHUD();	
 };
@@ -289,9 +346,9 @@ Level.prototype.addHUD = function () {
 
 Level.prototype.killGranny = function() {	
 	if (level.lives > 0) {
-		level.lives --;
-		level.player.kill();
-		level.player = level.initializePlayer();
+		level.lives--;
+		level.players[0].kill();
+		level.players = level.initializePlayer();
 		level.initializeGameCamera();
 		level.livesText.destroy();
 		level.addHUD();
@@ -325,7 +382,7 @@ Level.prototype.toggleCamera = function() {
 		} else {
 			//follow player
 			game.camera.following = true;
-			game.camera.follow(level.player);
+			game.camera.follow(level.players[0]);
 
 			level.cameraText.destroy();
 			level.cameraText = game.add.text(10, 48, "Camera: Locked")
@@ -353,7 +410,7 @@ Level.prototype.render = function() {
 Level.prototype.initializeGameCamera = function () {
 	//set camaera to follow character
 	game.camera.following = true;
-	game.camera.follow(this.player);
+	game.camera.follow(this.players[0]);
 };
 
 Level.prototype.initializeMap = function() {
@@ -383,43 +440,15 @@ Level.prototype.initializeMap = function() {
 };
 
 Level.prototype.initializePlayer = function() {
-	// create a new player at that spawn location.
-	lastCheckpoint = new Checkpoint(0,0,0,0,false,0);
-
-	for (i = 0; i < this.checkpoints.length; i++) {
-		if (this.checkpoints[i].activated && this.checkpoints[i].order > lastCheckpoint.order) {
-			lastCheckpoint = this.checkpoints[i];	
-		}	
-	}
-
-	return new Player(lastCheckpoint.body.center.x, lastCheckpoint.body.center.y);
+	game.loadSprites.checkpoints[0].spawnpoints.forEach(function(spawnpoint) {
+		level.players.push(new Player(spawnpoint.x, spawnpoint.y));
+	});
 };
 
 Level.prototype.initializeEnemies = function() {
-	this.enemies = 
-	[
-		new Enemy(1525, 480, 1525, 550, 100),
-		new Enemy(1525, 430, 1585, 430, 50),
-		new Enemy(1365, 200, 1425, 200, 50),
-		new Enemy(1365, 110, 1425, 110, 50),
-		new Enemy(1185, 40, 1415, 40, 100),
-		new Enemy(1135, 55, 1135, 130, 100),
-		new Enemy(1035, 130, 1155, 130, 100),
-		new Enemy(1235, 350, 1235, 500, 100),
-		new Enemy(1300, 325, 1300, 525, 150),
-		new Enemy(870, 500, 1325, 500, 200),
-		new Enemy(760, 325, 1300, 325, 200),
-		new Enemy(875, 220, 950, 220, 50),
-		new Enemy(865, 210, 865, 530, 150),
-		new Enemy(715, 125, 715, 355, 100),
-		new Enemy(500, 525, 700, 525, 100),
-		new Enemy(175, 525, 300, 525, 100),
-		new Enemy(175, 360, 450, 360, 150),
-		new Enemy(225, 115, 400, 115, 100),
-		new Enemy(275, 175, 450, 175, 125),
-		new Enemy(135, 275, 215, 275, 75),
-		new Enemy(85, 200, 85, 450, 100)
-	];
+	game.loadSprites.zombies.forEach(function(zombie) {
+		level.enemies.push(new Enemy(zombie.position, zombie.speed));
+	});
 };
 
 Level.prototype.initializeCheckpoints = function() {
@@ -450,23 +479,8 @@ Level.prototype.moveGameCamera = function() {
 		}
 	}
 };
- 
-Level.prototype.findAllTiles = function() {
-	var a = [191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 221, 221, 221, 221, 221, 221, 221, 191, 191, 191, 191, 191, 221, 221, 221, 221, 221, 221, 221, 221, 221, 221, 221, 221, 221, 221, 221, 221, 221, 221, 191, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 220, 221, 221, 221, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 191, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 161, 161, 191, 191, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 161, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 190, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 190, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 191, 221, 221, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 191, 191, 191, 191, 191, 191, 191, 191, 191, 221, 221, 221, 221, 221, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 221, 191, 191, 191, 191, 221, 221, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 221, 221, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-	    var m = {};
-	    for ( i = 0; i < a.length; i++) {
-	    	if 	(a[i] != 0) {
-	    		if (m[a[i]] != null ) {
-	    			m[a[i]] ++;
-	    		}
-	    		else {
-	    			m[a[i]] = 1;
-	    		} 
-	    	}
-	    }
-	    console.log(m);
-};
-},{"../entities/checkpoint":1,"../entities/enemy":2,"../entities/player":3,"../util/text_configurer":7}],6:[function(require,module,exports){
+
+},{"../entities/checkpoint":2,"../entities/enemy":3,"../entities/player":4,"../util/text_configurer":8}],7:[function(require,module,exports){
 var TextConfigurer = require("../util/text_configurer")
 
 var Preloader = function() {};
@@ -476,10 +490,11 @@ module.exports = Preloader;
 Preloader.prototype = {
 	preload: function() {
 		this.displayLoader();
-		this.load.tilemap("map", "assets/map/Levels/Level-1.json", null, Phaser.Tilemap.TILED_JSON);
+		this.load.tilemap("map", "assets/map/Levels/Multi-1/Multi-1-map.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/volcano-tileset.png");
 		this.load.spritesheet("dude", "assets/textures/enemy.png");
-		this.load.spritesheet("enemy", "assets/textures/zombie.png", 157, 102)
+		this.load.spritesheet("enemy", "assets/textures/zombie.png", 157, 102);
+		game.loadSprites = require("../../../assets/map/Levels/Multi-1/multi-1.json");
 
 		cursors = game.input.keyboard.createCursorKeys();
 		mouse = game.input.mouse;
@@ -499,17 +514,17 @@ Preloader.prototype = {
 	    });
 	}
 } 
-},{"../util/text_configurer":7}],7:[function(require,module,exports){
+},{"../../../assets/map/Levels/Multi-1/multi-1.json":1,"../util/text_configurer":8}],8:[function(require,module,exports){
 exports.configureText = function(text, color, size) {
 	text.font = "Carter One";
 	text.fill = color;
 	text.fontSize = size;
 }
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 window.game = new Phaser.Game(608, 608, Phaser.AUTO, '', { create: create });
 
 function create() {
-	easyrtc.enableDebug(true);
+	/*easyrtc.enableDebug(true);
 	easyrtc.connect("game.server",
 	 	function(easyrtcid, roomOwner) {
 	    	//connected
@@ -533,7 +548,7 @@ function create() {
 		function() {
 			console.log('failed to join')	
 		}	
-	);
+	);*/
 
 
     //initialize all the game states.
@@ -548,4 +563,4 @@ function create() {
 
 
 
-},{"./game/states/boot":4,"./game/states/level":5,"./game/states/preloader":6}]},{},[8]);
+},{"./game/states/boot":5,"./game/states/level":6,"./game/states/preloader":7}]},{},[9]);

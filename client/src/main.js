@@ -1,7 +1,7 @@
 window.game = new Phaser.Game(608, 608, Phaser.AUTO, '', { create: create });
 
 function create() {
-	easyrtc.enableDebug(true);
+	/*easyrtc.enableDebug(true);
 	easyrtc.connect("game.server",
 	 	function(easyrtcid, roomOwner) {
 	    	//connected
@@ -25,7 +25,7 @@ function create() {
 		function() {
 			console.log('failed to join')	
 		}	
-	);
+	);*/
 
 
     //initialize all the game states.

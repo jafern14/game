@@ -1,19 +1,18 @@
-var Enemy = function (startX, startY, endX, endY, _velocity) {
-    Phaser.Sprite.call(this, game, startX, startY, "enemy");
+var Enemy = function (_positions, _velocity) {
+    
+    this.positions = _positions;
+    this.counter = 0;
+
+    Phaser.Sprite.call(this, game, this.positions[0].x, this.positions[0].y, "enemy");
     game.physics.arcade.enable(this);
 
     this.body.collideWorldBounds = true;
-
     this.body.sourceHeight = 100;
     this.body.sourceWidth = 100;
 
+    this.max_velocity = _velocity;
+    this.destination = null;    
     
-    this.velocity = _velocity;
-
-    this.startPoint = new Phaser.Point(startX, startY);
-    this.endPoint = new Phaser.Point(endX, endY); 
-    this.moveToEnd = false;
-
     this.scale.set(.3,.3);
     this.anchor.x = .5;
     this.anchor.y = .5;
@@ -38,35 +37,51 @@ Enemy.prototype.update = function() {
 }
 
 Enemy.prototype.move = function () {
-    if (this.reachedDestination()) { 
-        destination = null;
-
-        if (this.moveToEnd) {
-            this.moveToEnd = false;
-            destination = this.startPoint;
-        } 
-        else {
-            this.moveToEnd = true;
-            destination = this.endPoint;
-        }
+    if (this.destination == null) {
+        //console.log(this.positions[this.counter%this.positions.size].x);
+        this.destination = new Phaser.Point(this.positions[this.counter%this.positions.length].x, this.positions[this.counter%this.positions.length].y);
+    
         //rotate sprite to face the direction it will be moving
-        this.rotation = game.physics.arcade.angleToXY(this.body, destination.x, destination.y);
+        this.rotation = game.physics.arcade.angleToXY(this.body, this.destination.x, this.destination.y);
+
         //move character to the point (player doesnt stop once it hits that point with this method - see checkLocation()) 
-        game.physics.arcade.moveToXY(this, destination.x, destination.y, this.velocity);
+        game.physics.arcade.moveToXY(this, this.positions[this.counter%this.positions.length].x, this.positions[this.counter%this.positions.length].y, this.max_velocity);
 
+        this.counter ++;
+    } 
+    this.checkLocation();
+}
+
+Enemy.prototype.checkLocation = function() {
+    //if there is no contact, stop the character from moving after they've reached their destination
+    //made it approximate destination because its unlikely it will end on that exact location
+    if (this.destination != null) {
+        //once it gets close enough to the x destination lower x velocity
+        if (Math.abs(this.position.x - this.destination.x) < this.max_velocity/100) {
+            this.body.velocity.x = -(this.position.x - this.destination.x);    
+        }
+        //once it gets close enough to the y destination lower y velocity
+        if (Math.abs(this.position.y - this.destination.y) < this.max_velocity/100) {
+            this.body.velocity.y = -(this.position.y - this.destination.y);
+        }
+        //stop movement completely - destination has been reached.
+        if (Math.abs(this.position.x - this.destination.x) < 5 && Math.abs(this.position.y - this.destination.y) < 5) {
+            this.destination = null;
+        }
     }
 }
 
-Enemy.prototype.reachedDestination = function () {
-    if (this.moveToEnd) {
-        if (this.position.x >= this.endPoint.x && this.position.y >= this.endPoint.y) {
-            return true;   
-        }
-    }
-    else {
-        if (this.position.x <= this.startPoint.x && this.position.y <= this.startPoint.y) {
-            return true;   
-        }
-    }
-    return false;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -88,10 +88,7 @@ Player.prototype.checkLocation = function() {
                     game.time.events.add(5000, function() {
                         game.state.start("Level");
                     }, this);
-
                 }
-                
-
                 level.checkpoints[i].activated = true;
             }   
         });
@@ -107,8 +104,7 @@ Player.prototype.checkLocation = function() {
     if (this.destination != null) {
         //once it gets close enough to the x destination lower x velocity
         if (Math.abs(this.position.x - this.destination.x) < MAX_VELOCITY/100) {
-            this.body.velocity.x = -(this.position.x - this.destination.x);
-            
+            this.body.velocity.x = -(this.position.x - this.destination.x);    
         }
         //once it gets close enough to the y destination lower y velocity
         if (Math.abs(this.position.y - this.destination.y) < MAX_VELOCITY/100) {
@@ -116,7 +112,7 @@ Player.prototype.checkLocation = function() {
         }
         //stop movement completely - destination has been reached.
         if (this.position.x == this.destination.x && this.position.y == this.destination.y) {
-            this.destination == null;
+            this.destination = null;
         }
     }
 }
