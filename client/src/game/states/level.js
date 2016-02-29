@@ -7,8 +7,11 @@ var Level = function () {};
 
 module.exports = Level;
 
+game.grannyPointer = 0;
+	
+
 Level.prototype.create = function() { 
-	game.grannyCounter = 1;
+	game.grannyCounter = 0;
 	// initialize things
 	level = this;
 	this.lives = 10;
@@ -20,23 +23,30 @@ Level.prototype.create = function() {
 	this.initializeCheckpoints();
 	this.initializeEnemies();
 	this.initializePlayer();
+	this.setupGrannyController();
 	
 	this.initializeGameCamera();
 
+	// initialize the "onclick" function
+	game.input.onDown.add(this.moveGranny, this);
+
 	// setup keyboard input
-	game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+	spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+	
 	this.wasd = {
 		'up' : game.input.keyboard.addKey(Phaser.Keyboard.W),
 		'down' : game.input.keyboard.addKey(Phaser.Keyboard.S),
 		'left' : game.input.keyboard.addKey(Phaser.Keyboard.A),
 		'right' :game.input.keyboard.addKey(Phaser.Keyboard.D)
-	}
+	};
 
 	// on keyboard input toggle camera
 	game.input.keyboard.onDownCallback = this.toggleCamera;
-	// add player to keyboard context
-	game.input.keyboard.player = this.players[0];
 };
+
+Level.prototype.moveGranny = function(point) {
+	this.players[game.grannyPointer].move(point);
+}
 
 Level.prototype.addHUD = function () {
 	if (this.livesText != null) {
@@ -56,10 +66,7 @@ Level.prototype.addHUD = function () {
 }
 
 Level.prototype.killGranny = function(granny) {	
-	console.log(granny.id);
 	granny.kill();
-
-	console.log(this.players)
 }
 
 Level.prototype.toggleCamera = function() {
@@ -73,7 +80,7 @@ Level.prototype.toggleCamera = function() {
 		} else {
 			// follow player
 			game.camera.following = true;
-			game.camera.follow(level.players[0]);
+			game.camera.follow(level.players[game.grannyPointer]);
 		}	
 	}	
 };
@@ -96,7 +103,7 @@ Level.prototype.render = function() {
 Level.prototype.initializeGameCamera = function () {
 	// set camaera to follow character
 	game.camera.following = true;
-	game.camera.follow(this.players[0]);
+	game.camera.follow(this.players[game.grannyPointer]);
 };
 
 Level.prototype.initializeMap = function() {
@@ -147,6 +154,26 @@ Level.prototype.initializeCheckpoints = function() {
 		new Checkpoint(1506, 338, 92, 80, false, 4, true)		
 	];
 };
+
+Level.prototype.setupGrannyController = function() {
+	game.input.keyboard.addKey(Phaser.Keyboard.ONE).processKeyDown = function() {
+		game.grannyPointer = 0;
+		if ()
+		game.camera.follow(level.players[game.grannyPointer]);
+	}
+	game.input.keyboard.addKey(Phaser.Keyboard.TWO).processKeyDown = function() {
+		game.grannyPointer = 1;
+		game.camera.follow(level.players[game.grannyPointer]);
+	}
+	game.input.keyboard.addKey(Phaser.Keyboard.THREE).processKeyDown = function() {
+		game.grannyPointer = 2;
+		game.camera.follow(level.players[game.grannyPointer]);
+	}
+	game.input.keyboard.addKey(Phaser.Keyboard.FOUR).processKeyDown = function() {
+		game.grannyPointer = 3;
+		game.camera.follow(level.players[game.grannyPointer]);
+	}
+}
 
 Level.prototype.moveGameCamera = function() {
 	// check if camera is set to follow character
