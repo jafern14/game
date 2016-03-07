@@ -1,4 +1,4 @@
-# game
+# Game
 Checkout my progress at https://granny-volcano.herokuapp.com/
 
 # Tools/Libraries:

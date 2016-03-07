@@ -158,7 +158,7 @@ Level.prototype.initializeCheckpoints = function() {
 Level.prototype.setupGrannyController = function() {
 	game.input.keyboard.addKey(Phaser.Keyboard.ONE).processKeyDown = function() {
 		game.grannyPointer = 0;
-		if ()
+		//if ()
 		game.camera.follow(level.players[game.grannyPointer]);
 	}
 	game.input.keyboard.addKey(Phaser.Keyboard.TWO).processKeyDown = function() {
