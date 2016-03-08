@@ -8,9 +8,8 @@ var Level = function () {};
 module.exports = Level;
 
 game.grannyPointer = 0;
-	
 
-Level.prototype.create = function() { 
+Level.prototype.create = function() {
 	game.grannyCounter = 0;
 	// initialize things
 	level = this;
@@ -18,13 +17,13 @@ Level.prototype.create = function() {
 	this.enemies = [];
 	this.players = [];
 	game.physics.startSystem(Phaser.Physics.ARCADE);
-	
+
 	this.initializeMap();
 	this.initializeCheckpoints();
 	this.initializeEnemies();
 	this.initializePlayer();
 	this.setupGrannyController();
-	
+
 	this.initializeGameCamera();
 
 	// initialize the "onclick" function
@@ -32,7 +31,7 @@ Level.prototype.create = function() {
 
 	// setup keyboard input
 	spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-	
+
 	this.wasd = {
 		'up' : game.input.keyboard.addKey(Phaser.Keyboard.W),
 		'down' : game.input.keyboard.addKey(Phaser.Keyboard.S),
@@ -50,7 +49,7 @@ Level.prototype.moveGranny = function(point) {
 
 Level.prototype.addHUD = function () {
 	if (this.livesText != null) {
-		this.livesText.destroy(); 
+		this.livesText.destroy();
 	}
 
 	this.livesText = game.add.text(10, 10, "Lives: " + this.lives);
@@ -58,14 +57,14 @@ Level.prototype.addHUD = function () {
 	this.livesText.fixedToCamera = true;
 
 	if (this.cameraText != null) {
-		this.cameraText.destroy(); 
+		this.cameraText.destroy();
 	}
 	this.cameraText = game.add.text(10, 48, "Camera: Locked")
 	TextConfigurer.configureText(this.cameraText, "white", 16);
 	this.cameraText .fixedToCamera = true;
 }
 
-Level.prototype.killGranny = function(granny) {	
+Level.prototype.killGranny = function(granny) {
 	granny.kill();
 }
 
@@ -81,17 +80,17 @@ Level.prototype.toggleCamera = function() {
 			// follow player
 			game.camera.following = true;
 			game.camera.follow(level.players[game.grannyPointer]);
-		}	
-	}	
+		}
+	}
 };
 
 Level.prototype.update = function() {
 	// game camera updates
 	this.moveGameCamera();
-	
+
 	// disply checkpoints squares
 	for (i = 0; i < this.checkpoints.length; i++) {
-		this.checkpoints[i].update();	
+		this.checkpoints[i].update();
 	}
 };
 
@@ -115,25 +114,25 @@ Level.prototype.initializeMap = function() {
 	// Create Ground Layer
 	this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Ground"), game.width, game.height);
 	game.world.addAt(this.groundLayer, 0);
-	this.groundLayer.resizeWorld();		
-	
-	// Create Wall Layer, add collision tiles, eneable physics. 
+	this.groundLayer.resizeWorld();
+
+	// Create Wall Layer, add collision tiles, eneable physics.
 	this.blockLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Wall"), game.width, game.height);
     game.world.addAt(this.blockLayer, 1);
     this.map.setCollision([160, 161, 189, 190, 191, 192, 220, 221, 222], true, "Wall");
-	this.blockLayer.resizeWorld(); 
+	this.blockLayer.resizeWorld();
 	game.physics.arcade.enable(this.blockLayer);
 
 	// Create Death Layer, add collision tiles, enable physics.
 	this.deathLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Lava"), game.width, game.height);
     game.world.addAt(this.deathLayer, 2);
-    this.map.setCollision([121, 124, 152, 154, 184, 211, 213, 214, 400, 401, 402, 430, 431, 432, 460, 461, 462], true, "Lava");		
+    this.map.setCollision([121, 124, 152, 154, 184, 211, 213, 214, 400, 401, 402, 430, 431, 432, 460, 461, 462], true, "Lava");
     this.deathLayer.resizeWorld();
     game.physics.arcade.enable(this.deathLayer);
 };
 
 Level.prototype.initializePlayer = function() {
-	var i = 0; 
+	var i = 0;
 	game.loadSprites.checkpoints[0].spawnpoints.forEach(function(spawnpoint) {
 		level.players[i++] = new Player(spawnpoint.x, spawnpoint.y);
 	});
@@ -146,12 +145,12 @@ Level.prototype.initializeEnemies = function() {
 };
 
 Level.prototype.initializeCheckpoints = function() {
-	this.checkpoints = 
+	this.checkpoints =
 	[
 		new Checkpoint(0, 80, 64, 80, true, 1),
 		new Checkpoint(336, 542, 80, 64, false, 2),
 		new Checkpoint(750, 96, 80, 48, false, 3),
-		new Checkpoint(1506, 338, 92, 80, false, 4, true)		
+		new Checkpoint(1506, 338, 92, 80, false, 4, true)
 	];
 };
 
