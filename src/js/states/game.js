@@ -75,7 +75,6 @@ Game.prototype.toggleCamera = function() {
 			// unfollow
 			game.camera.following = false;
 			game.camera.unfollow();
-
 		} else {
 			// follow player
 			game.camera.following = true;
@@ -87,8 +86,8 @@ Game.prototype.toggleCamera = function() {
 Game.prototype.update = function() {
 	// game camera updates
 	this.moveGameCamera();
-
-	// disply checkpoints squares
+    this.checkContact(this);	
+    // disply checkpoints squares
 	for (i = 0; i < this.checkpoints.length; i++) {
 		this.checkpoints[i].update();
 	}
@@ -98,6 +97,27 @@ Game.prototype.render = function() {
 	// Show game stats - fps, camera location, sprite location
 	//game.debug.cameraInfo(game.camera, 32, 32);
 };
+
+Game.prototype.checkContact = function(game) {
+    this.players.forEach(function(granny) {
+        this.deathlayerContact(game, granny);
+        this.enemyContact(game, granny, this.enemies);
+    }, this);
+}
+
+Game.prototype.deathlayerContact = function(game, granny) {
+    game.physics.arcade.overlap(granny, this.deathLayer, function() {
+        game.killGranny(granny);
+    });
+}
+
+Game.prototype.enemyContact = function(game, granny, enemies) {
+    enemies.forEach(function(enemy) {
+        game.physics.arcade.overlap(granny, enemy, function() {
+                game.killGranny(granny);
+            });
+    }, this);
+}
 
 Game.prototype.initializeGameCamera = function () {
 	// set camaera to follow character
@@ -122,7 +142,7 @@ Game.prototype.initializeMap = function() {
     this.map.setCollision([160, 161, 189, 190, 191, 192, 220, 221, 222], true, "Wall");
 	this.blockLayer.resizeWorld();
 	game.physics.arcade.enable(this.blockLayer);
-
+   
 	// Create Death Layer, add collision tiles, enable physics.
 	this.deathLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Lava"), game.width, game.height);
     game.world.addAt(this.deathLayer, 2);

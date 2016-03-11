@@ -54,7 +54,7 @@ Player.prototype.checkLocation = function() {
     // check contact with rock walls
     game.physics.arcade.overlap(this, level.blockLayer);
 
-    granny = this;
+    /*granny = this;
     // check contact with lava - add "die" callback if contact is made
     game.physics.arcade.overlap(this, level.deathLayer,
         function() {
@@ -66,9 +66,9 @@ Player.prototype.checkLocation = function() {
         game.physics.arcade.overlap(this, level.enemies[i], function() {
             level.killGranny(granny)
         });    
-    }
+    }*/
 
-    // check for contact with checkpoints
+    /*// check for contact with checkpoints
     for (i = 0; i < level.checkpoints.length; i++) {
         game.physics.arcade.overlap(this, level.checkpoints[i], function() { 
             if (level.checkpoints[i].activated == false) {
@@ -100,7 +100,7 @@ Player.prototype.checkLocation = function() {
                 level.checkpoints[i].activated = true;
             }   
         });
-    }  
+    }*/
 
     // if there is no contact, stop the character from moving after they've reached their destination
     // made it approximate destination because its unlikely it will end on that exact location
