@@ -1,8 +1,12 @@
 {
-  "name": "game",
-  "version": "1.0.0",
-  "description": "Not really sure what my plans are with this game, some of my early plans are to use Phaser to create a multiplayer online game.\r Including Socket.io and node backend.",
-  "main": "index.js",
+  "name": "granny-volcano",
+  "description": "",
+  "readme": "",
+  "repository": "",
+  "version": "0.0.0",
+  "readme": "",
+  "repository": "",
+  
   "dependencies": {
     "colors": "^1.0.3",
     "corser": "^2.0.0",
@@ -20,6 +24,7 @@
     "union": "^0.4.4",
     "vows": "^0.7.0"
   },
+<<<<<<< Updated upstream
   "devDependencies": {
     "browser-sync": "^2.2.1",
     "del": "^1.1.1",
@@ -59,4 +64,36 @@
     "url": "https://github.com/adw45/game/issues"
   },
   "homepage": "https://github.com/adw45/game"
+=======
+  
+  "devDependencies": {
+    "bower": "*",
+    "gulp": "*",
+    "gulp-util": "*",
+    "del": "*",
+    "gulp-concat": "*",
+    "gulp-download": "*",
+    "gulp-rename": "*",
+    "gulp-minify-css": "*",
+    "gulp-minify-html": "*",
+    "gulp-processhtml": "*",
+    "gulp-jshint": "*",
+    "gulp-uglify": "*",
+    "gulp-connect": "*",
+    "gulp-watch": "*",
+    "browserify": "*",
+    "tiny-lr": "*",
+    "vinyl-source-stream": "*",
+    "gulp-streamify": "*",
+    "watchify": "*",
+    "gulp-if": "*",
+    "vinyl-paths": "*"
+  },
+
+  "scripts": {
+    "post-install": "node ./node_modules/bower/bin/bower install",
+    "start": "node ./node_modules/gulp/bin/gulp.js",
+    "build": "node ./node_modules/gulp/bin/gulp.js build"
+  }
+>>>>>>> Stashed changes
 }
