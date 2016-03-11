@@ -114,7 +114,7 @@ Player.prototype.checkLocation = function() {
                     this.winText.fixedToCamera = true;
 
                     game.time.events.add(5000, function() {
-                        game.state.start("Level");
+                        game.state.start("Game");
                     }, this);
                 }
                 level.checkpoints[i].activated = true;

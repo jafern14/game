@@ -39,7 +39,7 @@ Preloader.prototype = {
         }, this);
 
         this.load.onLoadComplete.add(function() {
-            game.state.start("Level");
+            game.state.start("Game");
         });
     },
 /*
