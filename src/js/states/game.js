@@ -1,16 +1,17 @@
-var Player = require("../entities/player");
-var Enemy = require("../entities/enemy");
-var Checkpoint = require("../entities/checkpoint");
-var TextConfigurer = require("../util/text_configurer");
+var Player = require("../entities/player"),
+    Enemy = require("../entities/enemy"),
+    Checkpoint = require("../entities/checkpoint"),
+    TextConfigurer = require("../util/text_configurer"),
+    _ = require("lodash");
 
 var Game = function () {};
 
 module.exports = Game;
 
 game.grannyPointer = 0;
-
+game.grannyCounter = 0;
+	
 Game.prototype.create = function() {
-	game.grannyCounter = 0;
 	// initialize things
 	level = this;
 	this.lives = 10;
@@ -65,6 +66,7 @@ Game.prototype.addHUD = function () {
 }
 
 Game.prototype.killGranny = function(granny) {
+    granny.die();
 	granny.kill();
 }
 
@@ -88,9 +90,9 @@ Game.prototype.update = function() {
 	this.moveGameCamera();
     this.checkContact(this);	
     // disply checkpoints squares
-	for (i = 0; i < this.checkpoints.length; i++) {
-		this.checkpoints[i].update();
-	}
+    _.forEach(this.checkpoints, function (checkpoint) {
+        checkpoint.update();
+    })
 };
 
 Game.prototype.render = function() {
@@ -112,11 +114,11 @@ Game.prototype.deathlayerContact = function(game, granny) {
 }
 
 Game.prototype.enemyContact = function(game, granny, enemies) {
-    enemies.forEach(function(enemy) {
+    _.forEach(enemies, function(enemy){
         game.physics.arcade.overlap(granny, enemy, function() {
-                game.killGranny(granny);
-            });
-    }, this);
+            game.killGranny(granny);
+        });
+    });
 }
 
 Game.prototype.initializeGameCamera = function () {
@@ -153,15 +155,15 @@ Game.prototype.initializeMap = function() {
 
 Game.prototype.initializePlayer = function() {
 	var i = 0;
-	game.loadSprites.checkpoints[0].spawnpoints.forEach(function(spawnpoint) {
-		level.players[i++] = new Player(spawnpoint.x, spawnpoint.y);
-	});
+    _.forEach(game.loadSprites.checkpoints[0].spawnpoints, function(spawnpoint) {
+        level.players[i] = new Player(i++, spawnpoint.x, spawnpoint.y);
+    });
 };
 
 Game.prototype.initializeEnemies = function() {
-	game.loadSprites.zombies.forEach(function(zombie) {
+    _.forEach(game.loadSprites.zombies, function(zombie) {
 		level.enemies.push(new Enemy(zombie.position, zombie.speed));
-	});
+    });
 };
 
 Game.prototype.initializeCheckpoints = function() {
@@ -177,7 +179,6 @@ Game.prototype.initializeCheckpoints = function() {
 Game.prototype.setupGrannyController = function() {
 	game.input.keyboard.addKey(Phaser.Keyboard.ONE).processKeyDown = function() {
 		game.grannyPointer = 0;
-		//if ()
 		game.camera.follow(level.players[game.grannyPointer]);
 	}
 	game.input.keyboard.addKey(Phaser.Keyboard.TWO).processKeyDown = function() {

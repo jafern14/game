@@ -20,7 +20,7 @@ Preloader.prototype = {
 
         cursors = game.input.keyboard.createCursorKeys();
         mouse = game.input.mouse;
-        /* 
+       /* 
        this.asset = this.add.sprite(320, 240, 'preloader');
        this.asset.anchor.setTo(0.5, 0.5);
    
