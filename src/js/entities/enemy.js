@@ -1,8 +1,8 @@
 var Enemy = function (_positions, _velocity) {
-    
     this.positions = _positions;
+    this.max_velocity = _velocity;
     this.counter = 0;
-
+    
     Phaser.Sprite.call(this, game, this.positions[0].x, this.positions[0].y, "enemy");
     game.physics.arcade.enable(this);
 
@@ -10,7 +10,6 @@ var Enemy = function (_positions, _velocity) {
     this.body.sourceHeight = 100;
     this.body.sourceWidth = 100;
 
-    this.max_velocity = _velocity;
     this.destination = null;    
     
     this.scale.set(.3,.3);
@@ -70,18 +69,3 @@ Enemy.prototype.checkLocation = function() {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
