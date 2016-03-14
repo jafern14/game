@@ -3,7 +3,11 @@ var TextConfigurer = require("../util/text_configurer")
 
 var Player = function (x, y) {
     this.id = game.grannyCounter++;
-    Phaser.Sprite.call(this, game, x, y, "dude");
+    if (this.id%2 == 0) {
+        Phaser.Sprite.call(this, game, x, y, "granny-red");
+    } else {
+        Phaser.Sprite.call(this, game, x, y, "granny-green");
+    }
     game.physics.arcade.enable(this);
 
     // set bounding box

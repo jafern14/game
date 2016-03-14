@@ -13,7 +13,8 @@ Preloader.prototype = {
         this.displayLoader();
         this.load.tilemap("map", "assets/levels/level-1/level-1-map.json", null, Phaser.Tilemap.TILED_JSON);
         this.load.image("tiles", "assets/tiles/volcano-tileset.png");
-        this.load.spritesheet("dude", "assets/textures/enemy.png");
+        this.load.spritesheet("granny-red", "assets/textures/enemy.png");
+        this.load.spritesheet("granny-green", "assets/textures/enemy-green.png");
         this.load.spritesheet("enemy", "assets/textures/zombie.png", 157, 102);
         game.loadSprites = require("../../assets/levels/level-1/level-1-sprites.json");
 
