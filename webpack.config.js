@@ -2,9 +2,7 @@ var config = {
     entry: "./app/main.js",
     output: {
         path: "./dist",
-        filename: "main.js"
-    },
-    watch: true
+        filename: "output.js"
+    }
 }
-
 module.exports = config;
