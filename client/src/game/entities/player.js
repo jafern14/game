@@ -25,6 +25,8 @@ var Player = function (x, y) {
 
     // add sprite to game
     game.add.existing(this);
+
+    console.log(level)
 }
 
 module.exports = Player;
@@ -50,7 +52,7 @@ Player.prototype.move = function(pointer) {
     game.physics.arcade.moveToXY(this, game.camera.x + pointer.x, game.camera.y + pointer.y, MAX_VELOCITY);
 };
 
-Player.prototype.checkLocation = function() {
+Player.prototype.checkLocation = function(c) {
     // check contact with rock walls
     game.physics.arcade.overlap(this, level.blockLayer);
 
