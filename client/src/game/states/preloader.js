@@ -9,7 +9,7 @@ Preloader.prototype = {
 		this.displayLoader();
 		this.load.tilemap("map", "assets/map/Levels/Multi-1/Multi-1-map.json", null, Phaser.Tilemap.TILED_JSON);
 		this.load.image("tiles", "assets/tiles/volcano-tileset.png");
-		this.load.spritesheet("dude", "assets/textures/enemy.png");
+		this.load.spritesheet("granny", "assets/textures/granny.png");
 		this.load.spritesheet("enemy", "assets/textures/zombie.png", 157, 102);
 		game.loadSprites = require("../../../assets/map/Levels/Multi-1/multi-1.json");
 
@@ -30,4 +30,4 @@ Preloader.prototype = {
 			game.state.start("Level");
 	    });
 	}
-} 
+}
