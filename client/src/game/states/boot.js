@@ -11,7 +11,6 @@ Boot.prototype = {
 		else {
 			alert("Desktop game only")
 		}
-
 		game.state.start("Preloader");
 	}
 }

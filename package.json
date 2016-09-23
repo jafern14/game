@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "express": "^4.13.3",
-    "phaser": "^2.3.0"
+    "phaser": "2.3.0"
   },
   "devDependencies": {},
   "scripts": {

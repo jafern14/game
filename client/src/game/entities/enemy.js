@@ -1,5 +1,4 @@
 var Enemy = function (_positions, _velocity) {
-    
     this.positions = _positions;
     this.counter = 0;
 
@@ -70,18 +69,3 @@ Enemy.prototype.checkLocation = function() {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
