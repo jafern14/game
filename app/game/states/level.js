@@ -65,6 +65,14 @@ Level.prototype.addHUD = function () {
 }
 
 Level.prototype.killGranny = function(granny) {
+	try {
+		do {
+			game.grannyPointer++;
+		} while(this.players[game.grannyPointer].isDead)
+	} catch(ex) {
+		console.log("the end");
+	}
+	 
 	granny.kill();
 }
 
@@ -156,21 +164,28 @@ Level.prototype.initializeCheckpoints = function() {
 
 Level.prototype.setupGrannyController = function() {
 	game.input.keyboard.addKey(Phaser.Keyboard.ONE).processKeyDown = function() {
-		game.grannyPointer = 0;
-		//if ()
-		game.camera.follow(level.players[game.grannyPointer]);
+		if (!level.players[0].isDead) {
+			game.grannyPointer = 0;
+			game.camera.follow(level.players[game.grannyPointer]);
+		}
 	}
 	game.input.keyboard.addKey(Phaser.Keyboard.TWO).processKeyDown = function() {
-		game.grannyPointer = 1;
-		game.camera.follow(level.players[game.grannyPointer]);
+		if (!level.players[1].isDead) {
+			game.grannyPointer = 1;
+			game.camera.follow(level.players[game.grannyPointer]);
+		}
 	}
 	game.input.keyboard.addKey(Phaser.Keyboard.THREE).processKeyDown = function() {
-		game.grannyPointer = 2;
-		game.camera.follow(level.players[game.grannyPointer]);
+		if (!level.players[2].isDead) {
+			game.grannyPointer = 2;
+			game.camera.follow(level.players[game.grannyPointer]);
+		}
 	}
 	game.input.keyboard.addKey(Phaser.Keyboard.FOUR).processKeyDown = function() {
-		game.grannyPointer = 3;
-		game.camera.follow(level.players[game.grannyPointer]);
+		if (!level.players[3].isDead) {
+			game.grannyPointer = 3;
+			game.camera.follow(level.players[game.grannyPointer]);
+		}
 	}
 }
 

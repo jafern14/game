@@ -1,4 +1,4 @@
-window.game = new Phaser.Game(608, 608, Phaser.AUTO, '', { create: create });
+window.game = new Phaser.Game(800, 384, Phaser.AUTO, '', { create: create });
 
 var boot = require("./game/states/boot"),
     preloader = require("./game/states/preloader"),
