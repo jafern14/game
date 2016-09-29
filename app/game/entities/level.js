@@ -1,15 +1,45 @@
 var Player = require("../entities/player");
-var Enemy = require("../entities/enemy");
+var Enemy = require("../entities/zombie");
 var Checkpoint = require("../entities/checkpoint");
 var TextConfigurer = require("../util/text_configurer");
 
-var Level = function () {};
+var Level = function () {
+	function createMap(game) {
+		// read from tilemap "map"
+		map = game.add.tilemap("map");
+		//tileset = volcano-set (inside Lava-1.json, tiles is from preloaded image
+		map.addTilesetImage("volcano-tileset", "tiles", 16, 16);
 
-module.exports = Level;
+		// Create Ground Layer
+		groundLayer = new Phaser.TilemapLayer(game, map, map.getLayerIndex("Ground"), game.width, game.height);
+		game.world.addAt(groundLayer, 0);
+		groundLayer.resizeWorld();
 
-game.grannyPointer = 0;
+		// Create Wall Layer, add collision tiles, eneable physics.
+		blockLayer = new Phaser.TilemapLayer(game, map, map.getLayerIndex("Wall"), game.width, game.height);
+		game.world.addAt(blockLayer, 1);
+		map.setCollision([160, 161, 189, 190, 191, 192, 220, 221, 222], true, "Wall");
+		blockLayer.resizeWorld();
+		game.physics.arcade.enable(blockLayer);
 
-Level.prototype.create = function() {
+		// Create Death Layer, add collision tiles, enable physics.
+		deathLayer = new Phaser.TilemapLayer(game, map, map.getLayerIndex("Lava"), game.width, game.height);
+		game.world.addAt(deathLayer, 2);
+		map.setCollision([121, 124, 152, 154, 184, 211, 213, 214, 400, 401, 402, 430, 431, 432, 460, 461, 462], true, "Lava");
+		deathLayer.resizeWorld();
+		game.physics.arcade.enable(deathLayer);
+	}
+
+	return {
+		createMap: createMap
+	}
+};
+
+module.exports = Level();
+
+//game.grannyPointer = 0;
+
+/*Level.prototype.create = function() {
 	game.grannyCounter = 0;
 	// initialize things
 	level = this;
@@ -18,7 +48,6 @@ Level.prototype.create = function() {
 	this.players = [];
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 
-	this.initializeMap();
 	this.initializeCheckpoints();
 	this.initializeEnemies();
 	this.initializePlayer();
@@ -47,23 +76,6 @@ Level.prototype.moveGranny = function(point) {
 	this.players[game.grannyPointer].move(point);
 }
 
-Level.prototype.addHUD = function () {
-	if (this.livesText != null) {
-		this.livesText.destroy();
-	}
-
-	this.livesText = game.add.text(10, 10, "Lives: " + this.lives);
-	TextConfigurer.configureText(this.livesText, "white", 32);
-	this.livesText.fixedToCamera = true;
-
-	if (this.cameraText != null) {
-		this.cameraText.destroy();
-	}
-	this.cameraText = game.add.text(10, 48, "Camera: Locked")
-	TextConfigurer.configureText(this.cameraText, "white", 16);
-	this.cameraText .fixedToCamera = true;
-}
-
 Level.prototype.killGranny = function(granny) {
 	try {
 		do {
@@ -75,22 +87,6 @@ Level.prototype.killGranny = function(granny) {
 	 
 	granny.kill();
 }
-
-Level.prototype.toggleCamera = function() {
-	// if spacebar was hit, toggle camera
-	if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-		if (game.camera.following === true) {
-			// unfollow
-			game.camera.following = false;
-			game.camera.unfollow();
-
-		} else {
-			// follow player
-			game.camera.following = true;
-			game.camera.follow(level.players[game.grannyPointer]);
-		}
-	}
-};
 
 Level.prototype.update = function() {
 	// game camera updates
@@ -107,37 +103,6 @@ Level.prototype.render = function() {
 	//game.debug.cameraInfo(game.camera, 32, 32);
 };
 
-Level.prototype.initializeGameCamera = function () {
-	// set camaera to follow character
-	game.camera.following = true;
-	game.camera.follow(this.players[game.grannyPointer]);
-};
-
-Level.prototype.initializeMap = function() {
-	// read from tilemap "map"
-	this.map = game.add.tilemap("map");
-	//tileset = volcano-set (inside Lava-1.json, tiles is from preloaded image
-	this.map.addTilesetImage("volcano-tileset", "tiles", 16, 16);
-
-	// Create Ground Layer
-	this.groundLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Ground"), game.width, game.height);
-	game.world.addAt(this.groundLayer, 0);
-	this.groundLayer.resizeWorld();
-
-	// Create Wall Layer, add collision tiles, eneable physics.
-	this.blockLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Wall"), game.width, game.height);
-    game.world.addAt(this.blockLayer, 1);
-    this.map.setCollision([160, 161, 189, 190, 191, 192, 220, 221, 222], true, "Wall");
-	this.blockLayer.resizeWorld();
-	game.physics.arcade.enable(this.blockLayer);
-
-	// Create Death Layer, add collision tiles, enable physics.
-	this.deathLayer = new Phaser.TilemapLayer(game, this.map, this.map.getLayerIndex("Lava"), game.width, game.height);
-    game.world.addAt(this.deathLayer, 2);
-    this.map.setCollision([121, 124, 152, 154, 184, 211, 213, 214, 400, 401, 402, 430, 431, 432, 460, 461, 462], true, "Lava");
-    this.deathLayer.resizeWorld();
-    game.physics.arcade.enable(this.deathLayer);
-};
 
 Level.prototype.initializePlayer = function() {
 	var i = 0;
@@ -189,21 +154,4 @@ Level.prototype.setupGrannyController = function() {
 	}
 }
 
-Level.prototype.moveGameCamera = function() {
-	// check if camera is set to follow character
-	if (game.camera.following == false) {
-		// move camera
-		if (this.wasd.up.isDown) {
-			game.camera.y -= 4;
-		}
-		if (this.wasd.down.isDown) {
-			game.camera.y += 4;
-		}
-		if (this.wasd.left.isDown) {
-			game.camera.x -= 4;
-		}
-		if (this.wasd.right.isDown) {
-			game.camera.x += 4;
-		}
-	}
-};
+*/
